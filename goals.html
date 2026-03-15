@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CampusLife – Goals</title>
+  <title>PersonaTrack – Goals</title>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    /* Goal card */
+    
     .goal-card {
       background: white;
       border-radius: 14px;
@@ -70,12 +70,11 @@
 <body>
 <div class="app-layout">
 
-  <!-- SIDEBAR -->
   <aside class="sidebar">
-    <div class="sidebar-logo"><div class="logo-icon">🎓</div><span>CampusLife</span></div>
+    <div class="sidebar-logo"><div class="logo-icon">🎓</div><span>PersonaTrack</span></div>
     <div class="sidebar-user">
       <div class="avatar" id="sidebar-avatar">S</div>
-      <div class="user-info"><div class="name" id="sidebar-name">Student</div><div class="role">University Student</div></div>
+      <div class="user-info"><div class="name" id="sidebar-name">User</div><div class="role">Member</div></div>
     </div>
     <nav class="sidebar-nav">
       <div class="nav-section-label">Main Menu</div>
@@ -92,7 +91,6 @@
     <div class="sidebar-bottom"><div class="logout-btn" onclick="handleLogout()"><span>🚪</span><span>Logout</span></div></div>
   </aside>
 
-  <!-- MAIN -->
   <div class="main-content">
     <header class="topbar">
       <div class="topbar-title">🎯 Goals Tracker</div>
@@ -109,7 +107,6 @@
         <button class="btn btn-primary" onclick="openModal()">➕ Add Goal</button>
       </div>
 
-      <!-- Stats -->
       <div class="grid-4" style="margin-bottom:22px;">
         <div class="stat-card">
           <div class="stat-icon" style="background:#e3f2fd;">🎯</div>
@@ -129,7 +126,6 @@
         </div>
       </div>
 
-      <!-- Chart + Tab -->
       <div class="grid-2" style="margin-bottom:22px;">
         <div class="card">
           <div class="card-title">📊 Goals by Category</div>
@@ -141,7 +137,6 @@
         </div>
       </div>
 
-      <!-- Tabs -->
       <div class="tab-bar" style="margin-bottom:18px;">
         <button class="tab-btn active" onclick="setTab('all',this)">All Goals</button>
         <button class="tab-btn" onclick="setTab('Academic',this)">📚 Academic</button>
@@ -150,15 +145,13 @@
         <button class="tab-btn" onclick="setTab('achieved',this)">🏆 Achieved</button>
       </div>
 
-      <!-- Goals Grid -->
       <div class="grid-3" id="goals-grid"></div>
 
     </main>
-    <footer class="footer"><span>CampusLife</span> © 2025 — Made with ❤️ for University Students</footer>
+    <footer class="footer"><span>PersonaTrack</span> © 2026 — Made with ❤️ for YOU ! </footer>
   </div>
 </div>
 
-<!-- ADD GOAL MODAL -->
 <div class="modal-overlay" id="goal-modal">
   <div class="modal-box">
     <div class="modal-header">
@@ -221,7 +214,6 @@
   function renderGoals() {
     const search = document.getElementById('search-input').value.toLowerCase();
 
-    // Stats
     document.getElementById('st-total').textContent    = goals.length;
     document.getElementById('st-achieved').textContent = goals.filter(g=>g.achieved||g.progress>=100).length;
     document.getElementById('st-academic').textContent = goals.filter(g=>g.category==='Academic').length;
