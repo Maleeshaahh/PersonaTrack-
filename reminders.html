@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CampusLife – Reminders</title>
+  <title>PersonaTrack – Reminders</title>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
   <style>
-    /* Reminder card */
+  
     .rem-card {
       background: white;
       border-radius: 14px;
@@ -38,7 +38,6 @@
     .rem-meta  { font-size:0.78rem; color:var(--text-light); margin-top:4px; display:flex; gap:12px; flex-wrap:wrap; }
     .rem-actions { display:flex; gap:8px; }
 
-    /* Today highlight box */
     .today-section {
       background: linear-gradient(135deg, #fff8e1, #fff3cd);
       border-radius: 14px;
@@ -51,7 +50,6 @@
       font-weight:700; font-size:1rem; color:#e65100; margin-bottom:12px;
     }
 
-    /* Calendar mini */
     .mini-cal {
       background: white;
       border-radius: 14px;
@@ -87,7 +85,6 @@
 <body>
 <div class="app-layout">
 
-  <!-- SIDEBAR -->
   <aside class="sidebar">
     <div class="sidebar-logo"><div class="logo-icon">🎓</div><span>CampusLife</span></div>
     <div class="sidebar-user">
@@ -109,7 +106,6 @@
     <div class="sidebar-bottom"><div class="logout-btn" onclick="handleLogout()"><span>🚪</span><span>Logout</span></div></div>
   </aside>
 
-  <!-- MAIN -->
   <div class="main-content">
     <header class="topbar">
       <div class="topbar-title">🔔 Reminders</div>
@@ -134,12 +130,10 @@
         </div>
       </div>
 
-      <!-- Main Layout: List + Calendar -->
       <div class="grid-2">
 
-        <!-- Reminders List -->
         <div>
-          <!-- Tabs -->
+       
           <div class="tab-bar" style="margin-bottom:16px;">
             <button class="tab-btn active" onclick="setTab('all',this)">All</button>
             <button class="tab-btn" onclick="setTab('upcoming',this)">Upcoming</button>
@@ -150,7 +144,6 @@
           <div id="reminders-list"></div>
         </div>
 
-        <!-- Mini Calendar -->
         <div class="mini-cal">
           <div class="cal-header">
             <button class="cal-btn" onclick="changeMonth(-1)">‹</button>
@@ -169,11 +162,10 @@
       </div>
     </main>
 
-    <footer class="footer"><span>CampusLife</span> © 2025 — Made with ❤️ for University Students</footer>
+    <footer class="footer"><span>PersonaTrack</span> © 2026 — Made with ❤️ for YOU ! </footer>
   </div>
 </div>
 
-<!-- ADD REMINDER MODAL -->
 <div class="modal-overlay" id="rem-modal">
   <div class="modal-box">
     <div class="modal-header">
@@ -246,7 +238,6 @@
     const search  = document.getElementById('search-input').value.toLowerCase();
     const todayStr = new Date().toDateString();
 
-    // Today's reminders
     const todayRems = reminders.filter(r => r.date && new Date(r.date).toDateString()===todayStr && !r.done);
     document.getElementById('today-list').innerHTML = todayRems.length > 0
       ? todayRems.map(r=>`
@@ -260,7 +251,6 @@
           </div>`).join('')
       : '<p style="font-size:0.87rem;color:var(--text-light);">No events today. Enjoy your free time! 🎉</p>';
 
-    // Main list
     let filtered = reminders.filter(r => r.title.toLowerCase().includes(search));
     if (currentTab==='upcoming') filtered = filtered.filter(r => !r.done && r.date && new Date(r.date) >= new Date());
     else if (currentTab!=='all') filtered = filtered.filter(r=>r.type===currentTab);
@@ -292,7 +282,6 @@
             </div>`;
         }).join('');
 
-    // Week list
     const now = new Date();
     const weekEnd = new Date(); weekEnd.setDate(now.getDate()+7);
     const weekRems = reminders.filter(r=>r.date && new Date(r.date)>=now && new Date(r.date)<=weekEnd && !r.done)
@@ -311,7 +300,6 @@
     renderCalendar();
   }
 
-  // ---- Calendar ----
   function renderCalendar() {
     const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
     document.getElementById('cal-month-label').textContent = months[calMonth]+' '+calYear;
@@ -324,7 +312,6 @@
     const days = ['Su','Mo','Tu','We','Th','Fr','Sa'];
     let html = days.map(d=>`<div class="cal-day-label">${d}</div>`).join('');
 
-    // Empty slots before first day
     for (let i=0;i<firstDay;i++) html+=`<div class="cal-day other-month"></div>`;
 
     for (let d=1;d<=daysInMonth;d++) {
