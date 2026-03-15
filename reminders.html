@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CampusLife – Reminders</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <style>
+    /* Reminder card */
+    .rem-card {
+      background: white;
+      border-radius: 14px;
+      padding: 18px 20px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      box-shadow: var(--shadow);
+      transition: var(--transition);
+      border-left: 5px solid var(--sky-base);
+    }
+    .rem-card:hover { box-shadow: var(--shadow-hover); transform: translateX(3px); }
+    .rem-card.done  { opacity:0.6; border-left-color:#b0bec5; }
+    .rem-card.today { border-left-color: var(--warning); background: #fffde7; }
+    .rem-card.urgent{ border-left-color: var(--danger);  background: #fff5f5; }
+    .rem-card.club  { border-left-color: #7b1fa2; }
+
+    .rem-icon {
+      width:46px; height:46px; border-radius:12px;
+      background:var(--sky-bg);
+      display:flex; align-items:center; justify-content:center;
+      font-size:1.4rem; flex-shrink:0;
+    }
+    .rem-body { flex:1; }
+    .rem-title { font-family:var(--font-main); font-size:0.97rem; font-weight:700; color:var(--sky-dark); }
+    .rem-title.done { text-decoration:line-through; color:var(--text-light); }
+    .rem-meta  { font-size:0.78rem; color:var(--text-light); margin-top:4px; display:flex; gap:12px; flex-wrap:wrap; }
+    .rem-actions { display:flex; gap:8px; }
+
+    /* Today highlight box */
+    .today-section {
+      background: linear-gradient(135deg, #fff8e1, #fff3cd);
+      border-radius: 14px;
+      padding: 18px 22px;
+      margin-bottom: 22px;
+      border: 1.5px solid #ffe082;
+    }
+    .today-section h3 {
+      font-family: var(--font-main);
+      font-weight:700; font-size:1rem; color:#e65100; margin-bottom:12px;
+    }
+
+    /* Calendar mini */
+    .mini-cal {
+      background: white;
+      border-radius: 14px;
+      padding: 18px;
+      box-shadow: var(--shadow);
+    }
+    .cal-header {
+      display:flex; align-items:center; justify-content:space-between;
+      margin-bottom:14px;
+    }
+    .cal-month { font-family:var(--font-main); font-weight:700; color:var(--sky-dark); }
+    .cal-btn   { background:none; border:none; cursor:pointer; font-size:1rem; color:var(--sky-base); }
+
+    .cal-grid  {
+      display:grid; grid-template-columns:repeat(7,1fr); gap:2px;
+      text-align:center;
+    }
+    .cal-day-label { font-size:0.72rem; font-weight:700; color:var(--text-light); padding:4px 0; }
+    .cal-day {
+      padding:6px 2px; font-size:0.82rem; border-radius:8px;
+      cursor:pointer; transition:var(--transition); color:var(--text-dark);
+    }
+    .cal-day:hover { background:var(--sky-pale); }
+    .cal-day.today { background:var(--sky-base); color:white; font-weight:700; }
+    .cal-day.has-reminder { position:relative; }
+    .cal-day.has-reminder::after {
+      content:''; position:absolute; bottom:2px; left:50%; transform:translateX(-50%);
+      width:4px; height:4px; border-radius:50%; background:var(--warning);
+    }
+    .cal-day.other-month { color:var(--sky-pale); }
+  </style>
+</head>
+<body>
+<div class="app-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo"><div class="logo-icon">🎓</div><span>CampusLife</span></div>
+    <div class="sidebar-user">
+      <div class="avatar" id="sidebar-avatar">S</div>
+      <div class="user-info"><div class="name" id="sidebar-name">Student</div><div class="role">University Student</div></div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Main Menu</div>
+      <a href="dashboard.html" class="nav-item"><span class="nav-icon">🏠</span><span>Dashboard</span></a>
+      <a href="todo.html"      class="nav-item"><span class="nav-icon">✅</span><span>To-Do List</span></a>
+      <a href="expenses.html"  class="nav-item"><span class="nav-icon">💰</span><span>Expenses</span></a>
+      <a href="goals.html"     class="nav-item"><span class="nav-icon">🎯</span><span>Goals</span></a>
+      <a href="notes.html"     class="nav-item"><span class="nav-icon">📝</span><span>Notes</span></a>
+      <a href="reminders.html" class="nav-item active"><span class="nav-icon">🔔</span><span>Reminders</span></a>
+      <a href="analytics.html" class="nav-item"><span class="nav-icon">📊</span><span>Analytics</span></a>
+      <div class="nav-section-label">Account</div>
+      <a href="profile.html"   class="nav-item"><span class="nav-icon">👤</span><span>My Profile</span></a>
+    </nav>
+    <div class="sidebar-bottom"><div class="logout-btn" onclick="handleLogout()"><span>🚪</span><span>Logout</span></div></div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main-content">
+    <header class="topbar">
+      <div class="topbar-title">🔔 Reminders</div>
+      <div class="topbar-search"><span>🔍</span><input type="text" id="search-input" placeholder="Search reminders..." oninput="renderReminders()"></div>
+      <div class="topbar-actions">
+        <button class="icon-btn">🔔</button>
+        <div class="topbar-date" id="today-date">📅</div>
+      </div>
+    </header>
+
+    <main class="page-body">
+      <div class="page-header">
+        <div><h1>Reminders 🔔</h1><p>Never miss an important event or deadline</p></div>
+        <button class="btn btn-primary" onclick="openModal()">➕ Add Reminder</button>
+      </div>
+
+      <!-- Today's important events -->
+      <div class="today-section">
+        <h3>⚡ Today – Important Events</h3>
+        <div id="today-list">
+          <p style="font-size:0.87rem;color:var(--text-light);">No events today. Enjoy your free time! 🎉</p>
+        </div>
+      </div>
+
+      <!-- Main Layout: List + Calendar -->
+      <div class="grid-2">
+
+        <!-- Reminders List -->
+        <div>
+          <!-- Tabs -->
+          <div class="tab-bar" style="margin-bottom:16px;">
+            <button class="tab-btn active" onclick="setTab('all',this)">All</button>
+            <button class="tab-btn" onclick="setTab('upcoming',this)">Upcoming</button>
+            <button class="tab-btn" onclick="setTab('Academic',this)">📚 Academic</button>
+            <button class="tab-btn" onclick="setTab('Club',this)">🏅 Club</button>
+            <button class="tab-btn" onclick="setTab('Personal',this)">👤 Personal</button>
+          </div>
+          <div id="reminders-list"></div>
+        </div>
+
+        <!-- Mini Calendar -->
+        <div class="mini-cal">
+          <div class="cal-header">
+            <button class="cal-btn" onclick="changeMonth(-1)">‹</button>
+            <div class="cal-month" id="cal-month-label">January 2025</div>
+            <button class="cal-btn" onclick="changeMonth(1)">›</button>
+          </div>
+          <div class="cal-grid" id="cal-grid"></div>
+          <div style="margin-top:14px;">
+            <div style="font-family:var(--font-main);font-weight:700;font-size:0.85rem;color:var(--sky-dark);margin-bottom:10px;">
+              Upcoming This Week 📅
+            </div>
+            <div id="week-list"></div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+
+    <footer class="footer"><span>CampusLife</span> © 2025 — Made with ❤️ for University Students</footer>
+  </div>
+</div>
+
+<!-- ADD REMINDER MODAL -->
+<div class="modal-overlay" id="rem-modal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3>🔔 Add Reminder</h3>
+      <button class="btn-icon" onclick="closeModal()">✕</button>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Event / Reminder Title *</label>
+      <input type="text" class="form-control" id="r-title" placeholder="e.g. Submit assignment">
+    </div>
+    <div class="grid-2">
+      <div class="form-group">
+        <label class="form-label">Category</label>
+        <select class="form-control" id="r-cat">
+          <option>Academic</option><option>Club</option><option>Personal</option><option>Other</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Priority</label>
+        <select class="form-control" id="r-pri">
+          <option>Normal</option><option>Important</option><option>Urgent</option>
+        </select>
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="form-group">
+        <label class="form-label">Date *</label>
+        <input type="date" class="form-control" id="r-date">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Time</label>
+        <input type="time" class="form-control" id="r-time">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Notes (optional)</label>
+      <input type="text" class="form-control" id="r-notes" placeholder="Extra details...">
+    </div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;">
+      <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveReminder()">🔔 Save Reminder</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast-container" class="toast-container"></div>
+
+<script>
+  if (!localStorage.getItem('cl_loggedin')) window.location.href='index.html';
+  const user = JSON.parse(localStorage.getItem('cl_user')||'{}');
+  document.getElementById('sidebar-name').textContent = user.name||'Student';
+  document.getElementById('sidebar-avatar').textContent = (user.name||'S').split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2);
+  document.getElementById('today-date').textContent = '📅 '+new Date().toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+
+  let reminders = JSON.parse(localStorage.getItem('cl_reminders')||'[]');
+  let currentTab = 'all';
+  let calYear = new Date().getFullYear();
+  let calMonth = new Date().getMonth();
+
+  const typeIcons = { Academic:'📚', Club:'🏅', Personal:'👤', Other:'📌' };
+  const priColors = { Urgent:'urgent', Important:'today', Normal:'' };
+
+  function setTab(tab,btn) {
+    currentTab=tab;
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active'); renderReminders();
+  }
+
+  function renderReminders() {
+    const search  = document.getElementById('search-input').value.toLowerCase();
+    const todayStr = new Date().toDateString();
+
+    // Today's reminders
+    const todayRems = reminders.filter(r => r.date && new Date(r.date).toDateString()===todayStr && !r.done);
+    document.getElementById('today-list').innerHTML = todayRems.length > 0
+      ? todayRems.map(r=>`
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+            <span>${typeIcons[r.type]||'🔔'}</span>
+            <div>
+              <div style="font-weight:700;font-size:0.88rem;color:var(--text-dark);">${r.title}</div>
+              <div style="font-size:0.75rem;color:var(--text-light);">${r.time||'All day'} • ${r.type||'General'}</div>
+            </div>
+            <span class="badge ${r.priority==='Urgent'?'badge-red':r.priority==='Important'?'badge-orange':'badge-blue'}">${r.priority}</span>
+          </div>`).join('')
+      : '<p style="font-size:0.87rem;color:var(--text-light);">No events today. Enjoy your free time! 🎉</p>';
+
+    // Main list
+    let filtered = reminders.filter(r => r.title.toLowerCase().includes(search));
+    if (currentTab==='upcoming') filtered = filtered.filter(r => !r.done && r.date && new Date(r.date) >= new Date());
+    else if (currentTab!=='all') filtered = filtered.filter(r=>r.type===currentTab);
+
+    filtered.sort((a,b)=> new Date(a.date||0) - new Date(b.date||0));
+
+    document.getElementById('reminders-list').innerHTML = filtered.length===0
+      ? `<div class="empty-state"><div class="empty-icon">🔔</div><p>No reminders. Add your first!</p></div>`
+      : filtered.map(r => {
+          const isToday2 = r.date && new Date(r.date).toDateString()===todayStr;
+          const cls = r.done?'done': r.priority==='Urgent'?'urgent': isToday2?'today': r.type==='Club'?'club':'';
+          return `
+            <div class="rem-card ${cls}">
+              <div class="rem-icon">${typeIcons[r.type]||'🔔'}</div>
+              <div class="rem-body">
+                <div class="rem-title ${r.done?'done':''}">${r.title}</div>
+                <div class="rem-meta">
+                  ${r.date?`<span>📅 ${r.date}</span>`:''}
+                  ${r.time?`<span>⏰ ${r.time}</span>`:''}
+                  <span class="badge ${r.priority==='Urgent'?'badge-red':r.priority==='Important'?'badge-orange':'badge-blue'}">${r.priority||'Normal'}</span>
+                  <span class="badge badge-teal">${r.type||'Other'}</span>
+                </div>
+                ${r.notes?`<div style="font-size:0.78rem;color:var(--text-light);margin-top:4px;">📄 ${r.notes}</div>`:''}
+              </div>
+              <div class="rem-actions">
+                <button class="btn-icon" onclick="toggleDone('${r.id}')" title="${r.done?'Undo':'Mark done'}">${r.done?'↩️':'✅'}</button>
+                <button class="btn-icon" onclick="deleteReminder('${r.id}')" title="Delete">🗑️</button>
+              </div>
+            </div>`;
+        }).join('');
+
+    // Week list
+    const now = new Date();
+    const weekEnd = new Date(); weekEnd.setDate(now.getDate()+7);
+    const weekRems = reminders.filter(r=>r.date && new Date(r.date)>=now && new Date(r.date)<=weekEnd && !r.done)
+                              .sort((a,b)=>new Date(a.date)-new Date(b.date));
+    document.getElementById('week-list').innerHTML = weekRems.length===0
+      ? '<p style="font-size:0.82rem;color:var(--text-light);">No upcoming events this week</p>'
+      : weekRems.slice(0,5).map(r=>`
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:0.82rem;">
+            <span>${typeIcons[r.type]||'🔔'}</span>
+            <div>
+              <div style="font-weight:700;color:var(--text-dark);">${r.title}</div>
+              <div style="color:var(--text-light);">${r.date||''}</div>
+            </div>
+          </div>`).join('');
+
+    renderCalendar();
+  }
+
+  // ---- Calendar ----
+  function renderCalendar() {
+    const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    document.getElementById('cal-month-label').textContent = months[calMonth]+' '+calYear;
+
+    const remDates = reminders.map(r=>r.date).filter(Boolean);
+    const firstDay = new Date(calYear, calMonth, 1).getDay();
+    const daysInMonth = new Date(calYear, calMonth+1, 0).getDate();
+    const today = new Date();
+
+    const days = ['Su','Mo','Tu','We','Th','Fr','Sa'];
+    let html = days.map(d=>`<div class="cal-day-label">${d}</div>`).join('');
+
+    // Empty slots before first day
+    for (let i=0;i<firstDay;i++) html+=`<div class="cal-day other-month"></div>`;
+
+    for (let d=1;d<=daysInMonth;d++) {
+      const dateStr = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      const isToday2 = today.getFullYear()===calYear && today.getMonth()===calMonth && today.getDate()===d;
+      const hasRem = remDates.some(r=>r===dateStr);
+      html+=`<div class="cal-day ${isToday2?'today':''} ${hasRem?'has-reminder':''}" title="${hasRem?'Has reminders':''}">${d}</div>`;
+    }
+    document.getElementById('cal-grid').innerHTML = html;
+  }
+
+  function changeMonth(dir) { calMonth+=dir; if(calMonth>11){calMonth=0;calYear++;} if(calMonth<0){calMonth=11;calYear--;} renderCalendar(); }
+
+  function toggleDone(id) {
+    const r=reminders.find(r=>r.id===id); if(r){ r.done=!r.done; saveReminders(); renderReminders(); }
+  }
+  function deleteReminder(id) {
+    if(!confirm('Delete this reminder?')) return;
+    reminders=reminders.filter(r=>r.id!==id); saveReminders(); renderReminders();
+    showToast('🗑️ Deleted!');
+  }
+  function saveReminders() { localStorage.setItem('cl_reminders',JSON.stringify(reminders)); }
+
+  function openModal() {
+    document.getElementById('r-date').value=new Date().toISOString().split('T')[0];
+    document.getElementById('rem-modal').classList.add('open');
+  }
+  function closeModal() {
+    document.getElementById('rem-modal').classList.remove('open');
+    ['r-title','r-notes'].forEach(id=>document.getElementById(id).value='');
+  }
+
+  function saveReminder() {
+    const title=document.getElementById('r-title').value.trim();
+    const date =document.getElementById('r-date').value;
+    if(!title||!date){showToast('⚠️ Please fill in title and date!','error');return;}
+
+    reminders.push({
+      id:Date.now().toString(), title, date,
+      time:document.getElementById('r-time').value,
+      type:document.getElementById('r-cat').value,
+      priority:document.getElementById('r-pri').value,
+      notes:document.getElementById('r-notes').value,
+      done:false
+    });
+    saveReminders(); renderReminders(); closeModal();
+    showToast('🔔 Reminder set!','success');
+  }
+
+  function showToast(msg,type='info') {
+    const c=document.getElementById('toast-container');
+    const t=document.createElement('div'); t.className='toast';
+    t.style.background=type==='success'?'#00897b':type==='error'?'#c62828':'var(--sky-dark)';
+    t.textContent=msg; c.appendChild(t); setTimeout(()=>t.remove(),3200);
+  }
+  function handleLogout() {
+    if(confirm('Logout?')){localStorage.removeItem('cl_loggedin');window.location.href='index.html';}
+  }
+  renderReminders();
+</script>
+</body>
+</html>

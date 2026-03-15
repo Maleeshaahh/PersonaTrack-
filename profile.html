@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CampusLife – My Profile</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <style>
+    /* Profile hero */
+    .profile-hero {
+      background: linear-gradient(135deg, var(--sky-dark) 0%, var(--sky-base) 100%);
+      border-radius: var(--radius);
+      padding: 32px;
+      color: white;
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      margin-bottom: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+    .profile-hero::after {
+      content:'🎓'; position:absolute; right:28px; font-size:6rem; opacity:0.1;
+    }
+    .profile-avatar-lg {
+      width: 90px; height: 90px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.25);
+      border: 4px solid rgba(255,255,255,0.5);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2.4rem; font-weight: 800; color: white;
+      flex-shrink: 0;
+      font-family: var(--font-main);
+    }
+    .profile-info h2 {
+      font-family: var(--font-main); font-size: 1.5rem; font-weight: 800; margin-bottom: 4px;
+    }
+    .profile-info .uni { opacity: 0.85; font-size: 0.92rem; margin-bottom: 12px; }
+    .profile-info .tags { display: flex; gap: 8px; flex-wrap: wrap; }
+    .profile-info .tag {
+      background: rgba(255,255,255,0.2);
+      border: 1px solid rgba(255,255,255,0.3);
+      padding: 4px 13px; border-radius: 20px; font-size: 0.78rem; font-weight: 700;
+    }
+
+    /* Stats mini row */
+    .profile-stats {
+      display: flex; gap: 0; margin-top: 18px;
+      background: white; border-radius: 14px;
+      box-shadow: var(--shadow); overflow: hidden;
+      margin-bottom: 24px;
+    }
+    .profile-stat-item {
+      flex: 1; text-align: center;
+      padding: 18px 10px;
+      border-right: 1px solid #f0f5fb;
+    }
+    .profile-stat-item:last-child { border-right: none; }
+    .profile-stat-item .ps-val {
+      font-family: var(--font-main); font-size: 1.5rem; font-weight: 800; color: var(--sky-dark);
+    }
+    .profile-stat-item .ps-lbl { font-size: 0.77rem; color: var(--text-light); font-weight: 600; }
+
+    /* Section card with edit */
+    .info-section {
+      background: white; border-radius: 14px;
+      padding: 22px; box-shadow: var(--shadow); margin-bottom: 20px;
+    }
+    .info-section-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 18px;
+    }
+    .info-section-header h3 {
+      font-family: var(--font-main); font-weight: 700; font-size: 1rem; color: var(--sky-dark);
+    }
+
+    .info-row {
+      display: flex; align-items: flex-start;
+      gap: 14px; padding: 11px 0;
+      border-bottom: 1px solid #f0f5fb;
+    }
+    .info-row:last-child { border-bottom: none; }
+    .info-row .ir-icon { font-size: 1.1rem; flex-shrink:0; margin-top:1px; }
+    .info-row .ir-label { font-size: 0.77rem; color: var(--text-light); font-weight: 600; }
+    .info-row .ir-value { font-size: 0.9rem; color: var(--text-dark); font-weight: 600; }
+
+    /* Club chips */
+    .club-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+    .club-chip {
+      display: flex; align-items: center; gap: 7px;
+      background: var(--sky-bg); color: var(--sky-dark);
+      border-radius: 20px; padding: 6px 14px;
+      font-size: 0.82rem; font-weight: 700;
+      border: 1.5px solid var(--sky-pale);
+    }
+
+    /* Habit tracker */
+    .habit-row {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 0; border-bottom: 1px solid #f0f5fb;
+    }
+    .habit-row:last-child { border-bottom: none; }
+    .habit-name { flex:1; font-size:0.88rem; font-weight:600; }
+    .habit-days { display: flex; gap: 4px; }
+    .habit-day {
+      width:24px; height:24px; border-radius:50%;
+      background: var(--sky-pale); font-size: 0.65rem; font-weight:700;
+      display:flex; align-items:center; justify-content:center; color: var(--sky-base);
+      cursor:pointer; transition: var(--transition);
+    }
+    .habit-day.done { background: var(--sky-base); color: white; }
+  </style>
+</head>
+<body>
+<div class="app-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo"><div class="logo-icon">🎓</div><span>CampusLife</span></div>
+    <div class="sidebar-user">
+      <div class="avatar" id="sidebar-avatar">S</div>
+      <div class="user-info"><div class="name" id="sidebar-name">Student</div><div class="role">University Student</div></div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Main Menu</div>
+      <a href="dashboard.html" class="nav-item"><span class="nav-icon">🏠</span><span>Dashboard</span></a>
+      <a href="todo.html"      class="nav-item"><span class="nav-icon">✅</span><span>To-Do List</span></a>
+      <a href="expenses.html"  class="nav-item"><span class="nav-icon">💰</span><span>Expenses</span></a>
+      <a href="goals.html"     class="nav-item"><span class="nav-icon">🎯</span><span>Goals</span></a>
+      <a href="notes.html"     class="nav-item"><span class="nav-icon">📝</span><span>Notes</span></a>
+      <a href="reminders.html" class="nav-item"><span class="nav-icon">🔔</span><span>Reminders</span></a>
+      <a href="analytics.html" class="nav-item"><span class="nav-icon">📊</span><span>Analytics</span></a>
+      <div class="nav-section-label">Account</div>
+      <a href="profile.html"   class="nav-item active"><span class="nav-icon">👤</span><span>My Profile</span></a>
+    </nav>
+    <div class="sidebar-bottom"><div class="logout-btn" onclick="handleLogout()"><span>🚪</span><span>Logout</span></div></div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main-content">
+    <header class="topbar">
+      <div class="topbar-title">👤 My Profile</div>
+      <div class="topbar-search"><span>🔍</span><input type="text" placeholder="Search..."></div>
+      <div class="topbar-actions">
+        <button class="icon-btn" onclick="window.location.href='reminders.html'">🔔</button>
+        <div class="topbar-date" id="today-date">📅</div>
+      </div>
+    </header>
+
+    <main class="page-body">
+      <div class="page-header">
+        <div><h1>My Profile 👤</h1><p>Your personal information and habits</p></div>
+        <button class="btn btn-primary" onclick="openEditModal()">✏️ Edit Profile</button>
+      </div>
+
+      <!-- Profile Hero -->
+      <div class="profile-hero">
+        <div class="profile-avatar-lg" id="hero-initials">S</div>
+        <div class="profile-info">
+          <h2 id="hero-name">Student Name</h2>
+          <div class="uni" id="hero-uni">University · Faculty</div>
+          <div class="tags">
+            <span class="tag">🎓 Undergraduate</span>
+            <span class="tag" id="hero-year">Year 1</span>
+            <span class="tag">📧 Student</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Stats -->
+      <div class="profile-stats">
+        <div class="profile-stat-item">
+          <div class="ps-val" id="ps-tasks">0</div>
+          <div class="ps-lbl">Tasks Created</div>
+        </div>
+        <div class="profile-stat-item">
+          <div class="ps-val" id="ps-goals">0</div>
+          <div class="ps-lbl">Goals Set</div>
+        </div>
+        <div class="profile-stat-item">
+          <div class="ps-val" id="ps-notes">0</div>
+          <div class="ps-lbl">Notes Saved</div>
+        </div>
+        <div class="profile-stat-item">
+          <div class="ps-val" id="ps-expenses">0</div>
+          <div class="ps-lbl">Transactions</div>
+        </div>
+        <div class="profile-stat-item">
+          <div class="ps-val" id="ps-done">0%</div>
+          <div class="ps-lbl">Completion Rate</div>
+        </div>
+      </div>
+
+      <!-- Main Grid -->
+      <div class="grid-2">
+
+        <!-- Personal Info -->
+        <div>
+          <div class="info-section">
+            <div class="info-section-header">
+              <h3>👤 Personal Information</h3>
+            </div>
+            <div class="info-row"><span class="ir-icon">📛</span><div><div class="ir-label">Full Name</div><div class="ir-value" id="pi-name">—</div></div></div>
+            <div class="info-row"><span class="ir-icon">📧</span><div><div class="ir-label">Email</div><div class="ir-value" id="pi-email">—</div></div></div>
+            <div class="info-row"><span class="ir-icon">🏫</span><div><div class="ir-label">University</div><div class="ir-value" id="pi-uni">—</div></div></div>
+            <div class="info-row"><span class="ir-icon">📚</span><div><div class="ir-label">Faculty / Department</div><div class="ir-value" id="pi-faculty">—</div></div></div>
+            <div class="info-row"><span class="ir-icon">📅</span><div><div class="ir-label">Academic Year</div><div class="ir-value" id="pi-year">—</div></div></div>
+            <div class="info-row"><span class="ir-icon">🎂</span><div><div class="ir-label">Date of Birth</div><div class="ir-value" id="pi-dob">—</div></div></div>
+            <div class="info-row"><span class="ir-icon">📱</span><div><div class="ir-label">Phone</div><div class="ir-value" id="pi-phone">—</div></div></div>
+          </div>
+
+          <!-- Clubs & Organizations -->
+          <div class="info-section">
+            <div class="info-section-header">
+              <h3>🏅 Clubs & Organizations</h3>
+              <button class="btn btn-sm btn-outline" onclick="openClubModal()">➕ Add Club</button>
+            </div>
+            <div class="club-chips" id="club-chips">
+              <div style="font-size:0.85rem;color:var(--text-light);">No clubs added yet.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Habits Tracker -->
+        <div>
+          <div class="info-section">
+            <div class="info-section-header">
+              <h3>⚡ Organization Habits</h3>
+              <button class="btn btn-sm btn-outline" onclick="openHabitModal()">➕ Add Habit</button>
+            </div>
+            <p style="font-size:0.8rem;color:var(--text-light);margin-bottom:14px;">Track your daily habits this week</p>
+            <div id="habits-list">
+              <div style="font-size:0.85rem;color:var(--text-light);">No habits added yet.</div>
+            </div>
+          </div>
+
+          <!-- App Settings -->
+          <div class="info-section">
+            <div class="info-section-header"><h3>⚙️ App Settings</h3></div>
+            <div class="info-row">
+              <span class="ir-icon">🔔</span>
+              <div style="flex:1"><div class="ir-label">Reminder Notifications</div><div class="ir-value">Enabled</div></div>
+              <input type="checkbox" checked style="cursor:pointer;">
+            </div>
+            <div class="info-row">
+              <span class="ir-icon">📊</span>
+              <div style="flex:1"><div class="ir-label">Weekly Analytics Report</div><div class="ir-value">Enabled</div></div>
+              <input type="checkbox" checked style="cursor:pointer;">
+            </div>
+            <div class="info-row">
+              <span class="ir-icon">🎯</span>
+              <div style="flex:1"><div class="ir-label">Goal Deadline Reminders</div><div class="ir-value">Enabled</div></div>
+              <input type="checkbox" checked style="cursor:pointer;">
+            </div>
+            <div style="margin-top:18px;">
+              <button class="btn btn-outline btn-sm" onclick="clearAllData()" style="color:var(--danger);border-color:var(--danger);">
+                🗑️ Clear All Data
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+
+    <footer class="footer"><span>CampusLife</span> © 2025 — Made with ❤️ for University Students</footer>
+  </div>
+</div>
+
+<!-- EDIT PROFILE MODAL -->
+<div class="modal-overlay" id="profile-modal">
+  <div class="modal-box" style="max-width:520px;">
+    <div class="modal-header">
+      <h3>✏️ Edit Profile</h3>
+      <button class="btn-icon" onclick="closeModal('profile-modal')">✕</button>
+    </div>
+    <div class="grid-2">
+      <div class="form-group">
+        <label class="form-label">Full Name</label>
+        <input type="text" class="form-control" id="e-name">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Phone</label>
+        <input type="text" class="form-control" id="e-phone" placeholder="+94...">
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="form-group">
+        <label class="form-label">University</label>
+        <input type="text" class="form-control" id="e-uni">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Faculty / Dept.</label>
+        <input type="text" class="form-control" id="e-faculty" placeholder="Engineering, Science...">
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="form-group">
+        <label class="form-label">Academic Year</label>
+        <select class="form-control" id="e-year">
+          <option>Year 1</option><option>Year 2</option><option>Year 3</option><option>Year 4</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Date of Birth</label>
+        <input type="date" class="form-control" id="e-dob">
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;">
+      <button class="btn btn-outline" onclick="closeModal('profile-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveProfile()">💾 Save Profile</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD CLUB MODAL -->
+<div class="modal-overlay" id="club-modal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3>🏅 Add Club / Organization</h3>
+      <button class="btn-icon" onclick="closeModal('club-modal')">✕</button>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Club Name</label>
+      <input type="text" class="form-control" id="c-name" placeholder="e.g. IEEE, AIESEC, Leo Club">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Your Role</label>
+      <input type="text" class="form-control" id="c-role" placeholder="e.g. Member, Secretary">
+    </div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;">
+      <button class="btn btn-outline" onclick="closeModal('club-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveClub()">➕ Add Club</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD HABIT MODAL -->
+<div class="modal-overlay" id="habit-modal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3>⚡ Add Daily Habit</h3>
+      <button class="btn-icon" onclick="closeModal('habit-modal')">✕</button>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Habit Name</label>
+      <input type="text" class="form-control" id="h-name" placeholder="e.g. Study 2 hours, Exercise, Read">
+    </div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;">
+      <button class="btn btn-outline" onclick="closeModal('habit-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveHabit()">➕ Add Habit</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast-container" class="toast-container"></div>
+
+<script>
+  if (!localStorage.getItem('cl_loggedin')) window.location.href='index.html';
+
+  // Load data
+  let user     = JSON.parse(localStorage.getItem('cl_user')     || '{}');
+  let profile  = JSON.parse(localStorage.getItem('cl_profile')  || '{}');
+  let clubs    = JSON.parse(localStorage.getItem('cl_clubs')    || '[]');
+  let habits   = JSON.parse(localStorage.getItem('cl_habits')   || '[]');
+  const todos     = JSON.parse(localStorage.getItem('cl_todos')     || '[]');
+  const goals     = JSON.parse(localStorage.getItem('cl_goals')     || '[]');
+  const notes     = JSON.parse(localStorage.getItem('cl_notes')     || '[]');
+  const expenses  = JSON.parse(localStorage.getItem('cl_expenses')  || '[]');
+
+  document.getElementById('today-date').textContent = '📅 '+new Date().toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+
+  function renderProfile() {
+    const name = profile.name || user.name || 'Student';
+    const initials = name.split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2)||'S';
+
+    document.getElementById('sidebar-name').textContent = name;
+    document.getElementById('sidebar-avatar').textContent = initials;
+    document.getElementById('hero-initials').textContent  = initials;
+    document.getElementById('hero-name').textContent = name;
+    document.getElementById('hero-uni').textContent  = (profile.university||user.university||'University') + (profile.faculty ? ' · '+profile.faculty : '');
+    document.getElementById('hero-year').textContent = profile.year||'Year 1';
+
+    document.getElementById('pi-name').textContent    = name;
+    document.getElementById('pi-email').textContent   = user.email||'—';
+    document.getElementById('pi-uni').textContent     = profile.university||user.university||'—';
+    document.getElementById('pi-faculty').textContent = profile.faculty||'—';
+    document.getElementById('pi-year').textContent    = profile.year||'—';
+    document.getElementById('pi-dob').textContent     = profile.dob||'—';
+    document.getElementById('pi-phone').textContent   = profile.phone||'—';
+
+    // Quick stats
+    document.getElementById('ps-tasks').textContent    = todos.length;
+    document.getElementById('ps-goals').textContent    = goals.length;
+    document.getElementById('ps-notes').textContent    = notes.length;
+    document.getElementById('ps-expenses').textContent = expenses.length;
+    const rate = todos.length>0 ? Math.round(todos.filter(t=>t.done).length/todos.length*100) : 0;
+    document.getElementById('ps-done').textContent     = rate+'%';
+
+    // Clubs
+    const clubColors = ['badge-blue','badge-green','badge-orange','badge-purple','badge-teal','badge-red'];
+    document.getElementById('club-chips').innerHTML = clubs.length>0
+      ? clubs.map((c,i)=>`
+          <div class="club-chip">
+            🏅 ${c.name} ${c.role?'('+c.role+')':''}
+            <span onclick="deleteClub(${i})" style="cursor:pointer;margin-left:4px;font-size:0.8rem;color:var(--danger);">✕</span>
+          </div>`).join('')
+      : '<div style="font-size:0.85rem;color:var(--text-light);">No clubs added yet.</div>';
+
+    // Habits
+    const dayLabels = ['M','T','W','T','F','S','S'];
+    document.getElementById('habits-list').innerHTML = habits.length>0
+      ? habits.map((h,hi)=>`
+          <div class="habit-row">
+            <span class="habit-name">⚡ ${h.name}</span>
+            <div class="habit-days">
+              ${dayLabels.map((d,di)=>`
+                <div class="habit-day ${(h.done||[])[di]?'done':''}" onclick="toggleHabit(${hi},${di})" title="Day ${di+1}">${d}</div>
+              `).join('')}
+            </div>
+            <button class="btn-icon" onclick="deleteHabit(${hi})">🗑️</button>
+          </div>`).join('')
+      : '<div style="font-size:0.85rem;color:var(--text-light);">No habits added yet. Build good routines!</div>';
+  }
+
+  // ---- Profile edit ----
+  function openEditModal() {
+    document.getElementById('e-name').value    = profile.name    || user.name || '';
+    document.getElementById('e-phone').value   = profile.phone   || '';
+    document.getElementById('e-uni').value     = profile.university || user.university || '';
+    document.getElementById('e-faculty').value = profile.faculty || '';
+    document.getElementById('e-year').value    = profile.year    || 'Year 1';
+    document.getElementById('e-dob').value     = profile.dob     || '';
+    document.getElementById('profile-modal').classList.add('open');
+  }
+
+  function saveProfile() {
+    profile.name       = document.getElementById('e-name').value.trim();
+    profile.phone      = document.getElementById('e-phone').value.trim();
+    profile.university = document.getElementById('e-uni').value.trim();
+    profile.faculty    = document.getElementById('e-faculty').value.trim();
+    profile.year       = document.getElementById('e-year').value;
+    profile.dob        = document.getElementById('e-dob').value;
+    localStorage.setItem('cl_profile', JSON.stringify(profile));
+    // Also update user name
+    user.name = profile.name || user.name;
+    localStorage.setItem('cl_user', JSON.stringify(user));
+    renderProfile(); closeModal('profile-modal');
+    showToast('✅ Profile updated!','success');
+  }
+
+  // ---- Clubs ----
+  function openClubModal() { document.getElementById('club-modal').classList.add('open'); }
+  function saveClub() {
+    const name = document.getElementById('c-name').value.trim();
+    if (!name) { showToast('⚠️ Enter club name!','error'); return; }
+    clubs.push({ name, role: document.getElementById('c-role').value.trim() });
+    localStorage.setItem('cl_clubs', JSON.stringify(clubs));
+    renderProfile(); closeModal('club-modal');
+    document.getElementById('c-name').value=''; document.getElementById('c-role').value='';
+    showToast('🏅 Club added!','success');
+  }
+  function deleteClub(i) { clubs.splice(i,1); localStorage.setItem('cl_clubs',JSON.stringify(clubs)); renderProfile(); }
+
+  // ---- Habits ----
+  function openHabitModal() { document.getElementById('habit-modal').classList.add('open'); }
+  function saveHabit() {
+    const name = document.getElementById('h-name').value.trim();
+    if (!name) { showToast('⚠️ Enter habit name!','error'); return; }
+    habits.push({ name, done: [false,false,false,false,false,false,false] });
+    localStorage.setItem('cl_habits', JSON.stringify(habits));
+    renderProfile(); closeModal('habit-modal');
+    document.getElementById('h-name').value='';
+    showToast('⚡ Habit added!','success');
+  }
+  function toggleHabit(hi,di) {
+    habits[hi].done[di] = !habits[hi].done[di];
+    localStorage.setItem('cl_habits',JSON.stringify(habits)); renderProfile();
+  }
+  function deleteHabit(i) { habits.splice(i,1); localStorage.setItem('cl_habits',JSON.stringify(habits)); renderProfile(); }
+
+  // ---- Clear all data ----
+  function clearAllData() {
+    if (!confirm('This will delete ALL your data (tasks, expenses, goals, notes, reminders). Are you absolutely sure?')) return;
+    ['cl_todos','cl_expenses','cl_goals','cl_notes','cl_reminders','cl_habits','cl_clubs','cl_profile'].forEach(k=>localStorage.removeItem(k));
+    showToast('🗑️ All data cleared!');
+    setTimeout(()=>location.reload(),1200);
+  }
+
+  // ---- Modal helpers ----
+  function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+  function showToast(msg,type='info') {
+    const c=document.getElementById('toast-container');
+    const t=document.createElement('div'); t.className='toast';
+    t.style.background=type==='success'?'#00897b':type==='error'?'#c62828':'var(--sky-dark)';
+    t.textContent=msg; c.appendChild(t); setTimeout(()=>t.remove(),3200);
+  }
+  function handleLogout() {
+    if(confirm('Logout?')){localStorage.removeItem('cl_loggedin');window.location.href='index.html';}
+  }
+
+  renderProfile();
+</script>
+</body>
+</html>

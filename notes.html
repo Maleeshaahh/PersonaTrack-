@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CampusLife – Notes</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <style>
+    /* Note card */
+    .note-card {
+      background: white;
+      border-radius: 14px;
+      padding: 18px;
+      box-shadow: var(--shadow);
+      transition: var(--transition);
+      cursor: pointer;
+      position: relative;
+      border-top: 4px solid var(--sky-base);
+      min-height: 160px;
+      display: flex; flex-direction: column;
+    }
+    .note-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-hover); }
+
+    /* Different colors per category */
+    .note-card[data-cat="Academic"]  { border-top-color: #1976d2; }
+    .note-card[data-cat="AIESEC"]    { border-top-color: #e65100; }
+    .note-card[data-cat="IEEE"]      { border-top-color: #7b1fa2; }
+    .note-card[data-cat="MS"]        { border-top-color: #00838f; }
+    .note-card[data-cat="Other"]     { border-top-color: #78909c; }
+
+    .note-header { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:10px; }
+    .note-title  { font-family:var(--font-main); font-weight:700; font-size:0.97rem; color:var(--sky-dark); flex:1; }
+    .note-body   { font-size:0.84rem; color:var(--text-mid); line-height:1.6; flex:1; overflow:hidden; display:-webkit-box; -webkit-line-clamp:4; -webkit-box-orient:vertical; }
+    .note-footer { display:flex; align-items:center; justify-content:space-between; margin-top:12px; }
+    .note-date   { font-size:0.73rem; color:var(--text-light); }
+    .note-actions { display:flex; gap:5px; }
+
+    /* Full-view panel */
+    .note-view-panel {
+      position: fixed;
+      right: 0; top: 0; bottom: 0;
+      width: 400px;
+      background: white;
+      box-shadow: -6px 0 30px rgba(13,71,161,0.12);
+      z-index: 150;
+      transform: translateX(100%);
+      transition: transform 0.3s ease;
+      display: flex; flex-direction: column;
+    }
+    .note-view-panel.open { transform: translateX(0); }
+    .note-view-header {
+      padding: 22px 22px 16px;
+      border-bottom: 1px solid #f0f5fb;
+      display:flex; align-items:center; justify-content:space-between;
+    }
+    .note-view-body { flex:1; padding:22px; overflow-y:auto; }
+    .note-view-body h2 { font-family:var(--font-main); font-weight:700; color:var(--sky-dark); margin-bottom:14px; }
+    .note-view-body p  { font-size:0.9rem; line-height:1.8; color:var(--text-mid); white-space:pre-wrap; }
+  </style>
+</head>
+<body>
+<div class="app-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo"><div class="logo-icon">🎓</div><span>CampusLife</span></div>
+    <div class="sidebar-user">
+      <div class="avatar" id="sidebar-avatar">S</div>
+      <div class="user-info"><div class="name" id="sidebar-name">Student</div><div class="role">University Student</div></div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Main Menu</div>
+      <a href="dashboard.html" class="nav-item"><span class="nav-icon">🏠</span><span>Dashboard</span></a>
+      <a href="todo.html"      class="nav-item"><span class="nav-icon">✅</span><span>To-Do List</span></a>
+      <a href="expenses.html"  class="nav-item"><span class="nav-icon">💰</span><span>Expenses</span></a>
+      <a href="goals.html"     class="nav-item"><span class="nav-icon">🎯</span><span>Goals</span></a>
+      <a href="notes.html"     class="nav-item active"><span class="nav-icon">📝</span><span>Notes</span></a>
+      <a href="reminders.html" class="nav-item"><span class="nav-icon">🔔</span><span>Reminders</span></a>
+      <a href="analytics.html" class="nav-item"><span class="nav-icon">📊</span><span>Analytics</span></a>
+      <div class="nav-section-label">Account</div>
+      <a href="profile.html"   class="nav-item"><span class="nav-icon">👤</span><span>My Profile</span></a>
+    </nav>
+    <div class="sidebar-bottom"><div class="logout-btn" onclick="handleLogout()"><span>🚪</span><span>Logout</span></div></div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main-content">
+    <header class="topbar">
+      <div class="topbar-title">📝 Notes</div>
+      <div class="topbar-search"><span>🔍</span><input type="text" id="search-input" placeholder="Search notes..." oninput="renderNotes()"></div>
+      <div class="topbar-actions">
+        <button class="icon-btn" onclick="window.location.href='reminders.html'">🔔</button>
+        <div class="topbar-date" id="today-date">📅</div>
+      </div>
+    </header>
+
+    <main class="page-body">
+      <div class="page-header">
+        <div><h1>My Notes 📝</h1><p>Capture ideas, lecture notes, and club minutes</p></div>
+        <button class="btn btn-primary" onclick="openModal()">➕ Add Note</button>
+      </div>
+
+      <!-- Category Filter Tabs -->
+      <div class="tab-bar" style="margin-bottom:20px;">
+        <button class="tab-btn active" onclick="setTab('all',this)">All</button>
+        <button class="tab-btn" onclick="setTab('Academic',this)">📚 Academic</button>
+        <button class="tab-btn" onclick="setTab('AIESEC',this)">🌍 AIESEC</button>
+        <button class="tab-btn" onclick="setTab('IEEE',this)">⚡ IEEE</button>
+        <button class="tab-btn" onclick="setTab('MS',this)">💻 MS</button>
+        <button class="tab-btn" onclick="setTab('Other',this)">📌 Other</button>
+      </div>
+
+      <!-- Notes Grid -->
+      <div class="grid-3" id="notes-grid"></div>
+    </main>
+
+    <footer class="footer"><span>CampusLife</span> © 2025 — Made with ❤️ for University Students</footer>
+  </div>
+</div>
+
+<!-- Note View Side Panel -->
+<div class="note-view-panel" id="note-panel">
+  <div class="note-view-header">
+    <span class="badge badge-blue" id="panel-cat">Academic</span>
+    <div style="display:flex;gap:8px;">
+      <button class="btn btn-sm btn-outline" onclick="editNote()">✏️ Edit</button>
+      <button class="btn-icon" onclick="closePanel()">✕</button>
+    </div>
+  </div>
+  <div class="note-view-body">
+    <h2 id="panel-title"></h2>
+    <p id="panel-body"></p>
+  </div>
+</div>
+
+<!-- ADD/EDIT NOTE MODAL -->
+<div class="modal-overlay" id="note-modal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3 id="modal-title">📝 Add Note</h3>
+      <button class="btn-icon" onclick="closeModal()">✕</button>
+    </div>
+    <input type="hidden" id="n-edit-id" value="">
+
+    <div class="form-group">
+      <label class="form-label">Note Title *</label>
+      <input type="text" class="form-control" id="n-title" placeholder="e.g. Chapter 3 Summary">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Category</label>
+      <select class="form-control" id="n-cat">
+        <option>Academic</option><option>AIESEC</option><option>IEEE</option><option>MS</option><option>Other</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Note Content *</label>
+      <textarea class="form-control" id="n-body" rows="6" placeholder="Write your notes here..."></textarea>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;">
+      <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveNote()">💾 Save Note</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast-container" class="toast-container"></div>
+
+<script>
+  if (!localStorage.getItem('cl_loggedin')) window.location.href='index.html';
+  const user = JSON.parse(localStorage.getItem('cl_user')||'{}');
+  document.getElementById('sidebar-name').textContent = user.name||'Student';
+  document.getElementById('sidebar-avatar').textContent = (user.name||'S').split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2);
+  document.getElementById('today-date').textContent = '📅 '+new Date().toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+
+  let notes = JSON.parse(localStorage.getItem('cl_notes')||'[]');
+  let currentTab = 'all';
+  let panelNoteId = null;
+
+  const catEmojis = { Academic:'📚', AIESEC:'🌍', IEEE:'⚡', MS:'💻', Other:'📌' };
+
+  function setTab(tab,btn) {
+    currentTab=tab;
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active'); renderNotes();
+  }
+
+  function renderNotes() {
+    const search = document.getElementById('search-input').value.toLowerCase();
+    let filtered = notes.filter(n => {
+      const matchSearch = n.title.toLowerCase().includes(search) || n.body.toLowerCase().includes(search);
+      const matchTab = currentTab==='all' || n.category===currentTab;
+      return matchSearch && matchTab;
+    });
+
+    if (filtered.length===0) {
+      document.getElementById('notes-grid').innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">📝</div><p>No notes found. Add your first note!</p></div>`;
+      return;
+    }
+
+    document.getElementById('notes-grid').innerHTML = filtered.slice().reverse().map(n => `
+      <div class="note-card" data-cat="${n.category}" onclick="viewNote('${n.id}')">
+        <div class="note-header">
+          <div class="note-title">${n.title}</div>
+          <span class="badge badge-blue">${catEmojis[n.category]||'📌'} ${n.category}</span>
+        </div>
+        <div class="note-body">${n.body}</div>
+        <div class="note-footer">
+          <span class="note-date">📅 ${n.date||''}</span>
+          <div class="note-actions" onclick="event.stopPropagation()">
+            <button class="btn-icon" onclick="openEditModal('${n.id}')" title="Edit">✏️</button>
+            <button class="btn-icon" onclick="deleteNote('${n.id}')" title="Delete">🗑️</button>
+          </div>
+        </div>
+      </div>`).join('');
+  }
+
+  function viewNote(id) {
+    const n = notes.find(n=>n.id===id);
+    if (!n) return;
+    panelNoteId = id;
+    document.getElementById('panel-title').textContent = n.title;
+    document.getElementById('panel-body').textContent  = n.body;
+    document.getElementById('panel-cat').textContent   = (catEmojis[n.category]||'📌')+' '+n.category;
+    document.getElementById('note-panel').classList.add('open');
+  }
+
+  function closePanel() { document.getElementById('note-panel').classList.remove('open'); }
+
+  function editNote() {
+    closePanel();
+    openEditModal(panelNoteId);
+  }
+
+  function openModal() {
+    document.getElementById('n-edit-id').value='';
+    document.getElementById('modal-title').textContent='📝 Add Note';
+    ['n-title','n-body'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('note-modal').classList.add('open');
+  }
+
+  function openEditModal(id) {
+    const n = notes.find(n=>n.id===id);
+    if (!n) return;
+    document.getElementById('n-edit-id').value = id;
+    document.getElementById('n-title').value = n.title;
+    document.getElementById('n-cat').value   = n.category;
+    document.getElementById('n-body').value  = n.body;
+    document.getElementById('modal-title').textContent = '✏️ Edit Note';
+    document.getElementById('note-modal').classList.add('open');
+  }
+
+  function closeModal() {
+    document.getElementById('note-modal').classList.remove('open');
+  }
+
+  function saveNote() {
+    const title = document.getElementById('n-title').value.trim();
+    const body  = document.getElementById('n-body').value.trim();
+    if (!title || !body) { showToast('⚠️ Please fill title and content!','error'); return; }
+
+    const editId = document.getElementById('n-edit-id').value;
+    if (editId) {
+      const n = notes.find(n=>n.id===editId);
+      if (n) { n.title=title; n.body=body; n.category=document.getElementById('n-cat').value; }
+    } else {
+      notes.push({
+        id:Date.now().toString(), title, body,
+        category:document.getElementById('n-cat').value,
+        date:new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})
+      });
+    }
+    localStorage.setItem('cl_notes',JSON.stringify(notes));
+    renderNotes(); closeModal();
+    showToast('💾 Note saved!','success');
+  }
+
+  function deleteNote(id) {
+    if (!confirm('Delete this note?')) return;
+    notes=notes.filter(n=>n.id!==id);
+    localStorage.setItem('cl_notes',JSON.stringify(notes));
+    renderNotes(); closePanel();
+    showToast('🗑️ Note deleted!');
+  }
+
+  function showToast(msg,type='info') {
+    const c=document.getElementById('toast-container');
+    const t=document.createElement('div'); t.className='toast';
+    t.style.background=type==='success'?'#00897b':type==='error'?'#c62828':'var(--sky-dark)';
+    t.textContent=msg; c.appendChild(t); setTimeout(()=>t.remove(),3200);
+  }
+  function handleLogout() {
+    if (confirm('Logout?')) { localStorage.removeItem('cl_loggedin'); window.location.href='index.html'; }
+  }
+  renderNotes();
+</script>
+</body>
+</html>

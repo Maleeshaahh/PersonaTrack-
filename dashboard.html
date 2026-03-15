@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CampusLife – Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <!-- Chart.js for graphs -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    /* ---- Dashboard-specific styles ---- */
+
+    /* Welcome banner */
+    .welcome-banner {
+      background: linear-gradient(135deg, var(--sky-dark) 0%, var(--sky-base) 60%, var(--sky-light) 100%);
+      border-radius: var(--radius);
+      padding: 28px 32px;
+      color: white;
+      margin-bottom: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+    .welcome-banner::after {
+      content: '🎓';
+      position: absolute;
+      right: 28px; top: 50%;
+      transform: translateY(-50%);
+      font-size: 5rem;
+      opacity: 0.18;
+    }
+    .welcome-banner h2 {
+      font-family: var(--font-main);
+      font-size: 1.5rem; font-weight: 800;
+      margin-bottom: 5px;
+    }
+    .welcome-banner p { opacity: 0.85; font-size: 0.92rem; }
+    .welcome-banner .btn-white-sm {
+      margin-top: 14px;
+      background: white;
+      color: var(--sky-dark);
+      border: none;
+      border-radius: 20px;
+      padding: 7px 18px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .welcome-banner .btn-white-sm:hover { transform: translateY(-1px); }
+
+    /* Quick action buttons */
+    .quick-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+    }
+    .quick-btn {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 10px 18px;
+      border-radius: 12px;
+      border: 1.8px solid var(--sky-pale);
+      background: white;
+      color: var(--sky-dark);
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition);
+      box-shadow: var(--shadow);
+    }
+    .quick-btn:hover {
+      background: var(--sky-base);
+      color: white;
+      border-color: var(--sky-base);
+      transform: translateY(-2px);
+    }
+    .quick-btn .q-icon { font-size: 1.1rem; }
+
+    /* Today's task items */
+    .task-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 11px 0;
+      border-bottom: 1px solid #f0f5fb;
+    }
+    .task-item:last-child { border-bottom: none; }
+    .task-check {
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      border: 2px solid var(--sky-light);
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      transition: var(--transition);
+    }
+    .task-check.done { background: var(--sky-light); border-color: var(--sky-light); }
+    .task-check.done::after { content: '✓'; color: white; font-size: 0.7rem; font-weight: 700; }
+    .task-text { flex: 1; font-size: 0.88rem; }
+    .task-text.done { text-decoration: line-through; color: var(--text-light); }
+
+    /* Expense mini list */
+    .expense-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid #f0f5fb;
+    }
+    .expense-item:last-child { border-bottom: none; }
+    .expense-icon {
+      width: 36px; height: 36px;
+      border-radius: 10px;
+      background: var(--sky-bg);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+    .expense-name { flex: 1; font-size: 0.87rem; font-weight: 600; color: var(--text-dark); }
+    .expense-date { font-size: 0.75rem; color: var(--text-light); }
+    .expense-amount { font-weight: 700; font-size: 0.9rem; }
+    .expense-amount.minus { color: var(--danger); }
+    .expense-amount.plus  { color: var(--success); }
+
+    /* Goal progress item */
+    .goal-item { margin-bottom: 16px; }
+    .goal-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 7px;
+    }
+    .goal-name { font-size: 0.87rem; font-weight: 600; color: var(--text-dark); }
+    .goal-pct  { font-size: 0.82rem; font-weight: 700; color: var(--sky-base); }
+
+    /* Upcoming reminders */
+    .reminder-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 11px 14px;
+      background: var(--sky-bg);
+      border-radius: 10px;
+      margin-bottom: 10px;
+      border-left: 4px solid var(--sky-base);
+    }
+    .reminder-item .r-icon { font-size: 1.3rem; }
+    .reminder-item .r-title { font-size: 0.87rem; font-weight: 700; color: var(--text-dark); }
+    .reminder-item .r-time  { font-size: 0.75rem; color: var(--text-light); }
+    .reminder-item.urgent { border-color: var(--danger); background: #fff5f5; }
+    .reminder-item.club   { border-color: var(--success); background: #f0faf9; }
+  </style>
+</head>
+<body>
+
+<div class="app-layout">
+
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">🎓</div>
+      <span>CampusLife</span>
+    </div>
+    <div class="sidebar-user">
+      <div class="avatar" id="sidebar-avatar">S</div>
+      <div class="user-info">
+        <div class="name" id="sidebar-name">Student</div>
+        <div class="role">University Student</div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Main Menu</div>
+      <a href="dashboard.html" class="nav-item active"><span class="nav-icon">🏠</span><span>Dashboard</span></a>
+      <a href="todo.html"      class="nav-item"><span class="nav-icon">✅</span><span>To-Do List</span></a>
+      <a href="expenses.html"  class="nav-item"><span class="nav-icon">💰</span><span>Expenses</span></a>
+      <a href="goals.html"     class="nav-item"><span class="nav-icon">🎯</span><span>Goals</span></a>
+      <a href="notes.html"     class="nav-item"><span class="nav-icon">📝</span><span>Notes</span></a>
+      <a href="reminders.html" class="nav-item"><span class="nav-icon">🔔</span><span>Reminders</span></a>
+      <a href="analytics.html" class="nav-item"><span class="nav-icon">📊</span><span>Analytics</span></a>
+      <div class="nav-section-label">Account</div>
+      <a href="profile.html"   class="nav-item"><span class="nav-icon">👤</span><span>My Profile</span></a>
+    </nav>
+    <div class="sidebar-bottom">
+      <div class="logout-btn" onclick="handleLogout()">
+        <span>🚪</span><span>Logout</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <div class="main-content">
+
+    <!-- Top Bar -->
+    <header class="topbar">
+      <div class="topbar-title">📊 Dashboard</div>
+      <div class="topbar-search">
+        <span>🔍</span>
+        <input type="text" placeholder="Search anything...">
+      </div>
+      <div class="topbar-actions">
+        <button class="icon-btn" onclick="window.location.href='reminders.html'" title="Reminders">
+          🔔<span class="badge"></span>
+        </button>
+        <div class="topbar-date" id="today-date">📅</div>
+      </div>
+    </header>
+
+    <!-- Page Body -->
+    <main class="page-body">
+
+      <!-- Welcome Banner -->
+      <div class="welcome-banner">
+        <h2 id="welcome-msg">Good Morning! 👋</h2>
+        <p>Here's what's happening in your campus life today.</p>
+        <button class="btn-white-sm" onclick="window.location.href='todo.html'">📋 View Today's Tasks →</button>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="quick-actions">
+        <button class="quick-btn" onclick="window.location.href='todo.html'">
+          <span class="q-icon">✅</span> Add Task
+        </button>
+        <button class="quick-btn" onclick="window.location.href='expenses.html'">
+          <span class="q-icon">💸</span> Add Expense
+        </button>
+        <button class="quick-btn" onclick="window.location.href='goals.html'">
+          <span class="q-icon">🎯</span> Add Goal
+        </button>
+        <button class="quick-btn" onclick="window.location.href='notes.html'">
+          <span class="q-icon">📝</span> Add Note
+        </button>
+        <button class="quick-btn" onclick="window.location.href='reminders.html'">
+          <span class="q-icon">🔔</span> Add Reminder
+        </button>
+      </div>
+
+      <!-- Stat Cards Row -->
+      <div class="grid-4" style="margin-bottom:24px;">
+        <div class="stat-card">
+          <div class="stat-icon" style="background:#e3f2fd;">✅</div>
+          <div class="stat-info">
+            <div class="label">Tasks Today</div>
+            <div class="value" id="stat-tasks">0</div>
+            <div class="sub" id="stat-tasks-sub">0 completed</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background:#e0f7fa;">💰</div>
+          <div class="stat-info">
+            <div class="label">Balance</div>
+            <div class="value" id="stat-balance">Rs 0</div>
+            <div class="sub" id="stat-balance-sub">This month</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background:#f3e5f5;">🎯</div>
+          <div class="stat-info">
+            <div class="label">Active Goals</div>
+            <div class="value" id="stat-goals">0</div>
+            <div class="sub">In progress</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background:#fff3e0;">🔔</div>
+          <div class="stat-info">
+            <div class="label">Reminders</div>
+            <div class="value" id="stat-reminders">0</div>
+            <div class="sub">Upcoming</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Grid: Charts + Lists -->
+      <div class="grid-2" style="margin-bottom:24px;">
+
+        <!-- Weekly Activity Chart -->
+        <div class="card">
+          <div class="card-title">📈 Weekly Activity</div>
+          <canvas id="weeklyChart" height="180"></canvas>
+        </div>
+
+        <!-- Expense Breakdown Chart -->
+        <div class="card">
+          <div class="card-title">💰 Expense Breakdown</div>
+          <canvas id="expenseChart" height="180"></canvas>
+        </div>
+
+      </div>
+
+      <!-- Bottom Grid: Tasks + Goals + Reminders + Expenses -->
+      <div class="grid-2" style="margin-bottom:24px;">
+
+        <!-- Today's Tasks -->
+        <div class="card">
+          <div class="card-title" style="justify-content:space-between;">
+            <span>✅ Today's Tasks</span>
+            <a href="todo.html" style="font-size:0.78rem;color:var(--sky-base);font-weight:700;">View All →</a>
+          </div>
+          <div id="dashboard-tasks">
+            <div class="empty-state">
+              <div class="empty-icon">📋</div>
+              <p>No tasks yet. <a href="todo.html" style="color:var(--sky-base)">Add one!</a></p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Upcoming Reminders -->
+        <div class="card">
+          <div class="card-title" style="justify-content:space-between;">
+            <span>🔔 Upcoming Reminders</span>
+            <a href="reminders.html" style="font-size:0.78rem;color:var(--sky-base);font-weight:700;">View All →</a>
+          </div>
+          <div id="dashboard-reminders">
+            <div class="empty-state">
+              <div class="empty-icon">🔔</div>
+              <p>No reminders. <a href="reminders.html" style="color:var(--sky-base)">Set one!</a></p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="grid-2">
+
+        <!-- Goal Progress -->
+        <div class="card">
+          <div class="card-title" style="justify-content:space-between;">
+            <span>🎯 Goal Progress</span>
+            <a href="goals.html" style="font-size:0.78rem;color:var(--sky-base);font-weight:700;">View All →</a>
+          </div>
+          <div id="dashboard-goals">
+            <div class="empty-state">
+              <div class="empty-icon">🎯</div>
+              <p>No goals yet. <a href="goals.html" style="color:var(--sky-base)">Set a goal!</a></p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Expenses -->
+        <div class="card">
+          <div class="card-title" style="justify-content:space-between;">
+            <span>💸 Recent Expenses</span>
+            <a href="expenses.html" style="font-size:0.78rem;color:var(--sky-base);font-weight:700;">View All →</a>
+          </div>
+          <div id="dashboard-expenses">
+            <div class="empty-state">
+              <div class="empty-icon">💰</div>
+              <p>No expenses yet.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <span>CampusLife</span> © 2025 — Made with ❤️ for University Students
+    </footer>
+  </div><!-- /main-content -->
+
+</div><!-- /app-layout -->
+
+<script>
+  // ---- Auth guard: redirect if not logged in ----
+  if (!localStorage.getItem('cl_loggedin')) {
+    window.location.href = 'index.html';
+  }
+
+  // ---- Set user info in sidebar ----
+  const user = JSON.parse(localStorage.getItem('cl_user') || '{}');
+  document.getElementById('sidebar-name').textContent = user.name || 'Student';
+  const initials = (user.name || 'S').split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2);
+  document.getElementById('sidebar-avatar').textContent = initials;
+
+  // ---- Welcome message based on time of day ----
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? 'Good Morning' : hour < 17 ? 'Good Afternoon' : 'Good Evening';
+  document.getElementById('welcome-msg').textContent = greeting + ', ' + (user.name || 'Student') + '! 👋';
+
+  // ---- Today's date in topbar ----
+  const now = new Date();
+  document.getElementById('today-date').textContent = '📅 ' + now.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric'});
+
+  // ---- Load data from localStorage and update stats ----
+  const todos     = JSON.parse(localStorage.getItem('cl_todos')     || '[]');
+  const expenses  = JSON.parse(localStorage.getItem('cl_expenses')  || '[]');
+  const goals     = JSON.parse(localStorage.getItem('cl_goals')     || '[]');
+  const reminders = JSON.parse(localStorage.getItem('cl_reminders') || '[]');
+
+  // Stats
+  const todayStr = new Date().toDateString();
+  const todayTasks = todos.filter(t => new Date(t.date||'').toDateString() === todayStr || !t.date);
+  const doneTasks  = todayTasks.filter(t => t.done).length;
+  document.getElementById('stat-tasks').textContent     = todayTasks.length;
+  document.getElementById('stat-tasks-sub').textContent = doneTasks + ' completed';
+
+  const totalBudget = expenses.reduce((s,e) => e.type==='income' ? s+parseFloat(e.amount||0) : s-parseFloat(e.amount||0), 0);
+  document.getElementById('stat-balance').textContent = 'Rs ' + totalBudget.toLocaleString();
+
+  const activeGoals = goals.filter(g => !g.achieved).length;
+  document.getElementById('stat-goals').textContent = activeGoals;
+
+  const upcoming = reminders.filter(r => !r.done).length;
+  document.getElementById('stat-reminders').textContent = upcoming;
+
+  // ---- Render Today's Tasks ----
+  if (todayTasks.length > 0) {
+    document.getElementById('dashboard-tasks').innerHTML = todayTasks.slice(0,5).map(t => `
+      <div class="task-item">
+        <div class="task-check ${t.done ? 'done' : ''}"></div>
+        <span class="task-text ${t.done ? 'done' : ''}">${t.title}</span>
+        <span class="badge ${t.priority==='High' ? 'badge-red' : t.priority==='Medium' ? 'badge-orange' : 'badge-blue'}">${t.priority||'Low'}</span>
+      </div>
+    `).join('');
+  }
+
+  // ---- Render Upcoming Reminders ----
+  const upcomingReminders = reminders.filter(r=>!r.done).slice(0,4);
+  if (upcomingReminders.length > 0) {
+    document.getElementById('dashboard-reminders').innerHTML = upcomingReminders.map(r => `
+      <div class="reminder-item ${r.type==='Academic'?'urgent':r.type==='Club'?'club':''}">
+        <span class="r-icon">${r.type==='Academic'?'📚':r.type==='Club'?'🏆':r.type==='Personal'?'👤':'🔔'}</span>
+        <div>
+          <div class="r-title">${r.title}</div>
+          <div class="r-time">${r.date||''} ${r.time||''}</div>
+        </div>
+        <span class="badge badge-blue">${r.type||'General'}</span>
+      </div>
+    `).join('');
+  }
+
+  // ---- Render Goal Progress ----
+  const activeGoalList = goals.filter(g=>!g.achieved).slice(0,4);
+  if (activeGoalList.length > 0) {
+    document.getElementById('dashboard-goals').innerHTML = activeGoalList.map(g => `
+      <div class="goal-item">
+        <div class="goal-header">
+          <span class="goal-name">${g.title}</span>
+          <span class="goal-pct">${g.progress||0}%</span>
+        </div>
+        <div class="progress-wrap">
+          <div class="progress-fill ${g.category==='Academic'?'':'green'}" style="width:${g.progress||0}%"></div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  // ---- Render Recent Expenses ----
+  if (expenses.length > 0) {
+    document.getElementById('dashboard-expenses').innerHTML = expenses.slice(-5).reverse().map(e => `
+      <div class="expense-item">
+        <div class="expense-icon">${e.type==='income'?'💵':'💸'}</div>
+        <div>
+          <div class="expense-name">${e.title}</div>
+          <div class="expense-date">${e.date||''}</div>
+        </div>
+        <div class="expense-amount ${e.type==='income'?'plus':'minus'}">
+          ${e.type==='income'?'+':'-'} Rs ${parseFloat(e.amount||0).toLocaleString()}
+        </div>
+      </div>
+    `).join('');
+  }
+
+  // ---- Weekly Chart (tasks completed per day) ----
+  const days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  // Mock data if no real data
+  const weeklyData = days.map((_,i) => {
+    return todos.filter(t => t.done && new Date(t.date||'').getDay() === (i+1)%7).length || Math.floor(Math.random()*5);
+  });
+
+  new Chart(document.getElementById('weeklyChart'), {
+    type: 'bar',
+    data: {
+      labels: days,
+      datasets: [{
+        label: 'Tasks Done',
+        data: weeklyData,
+        backgroundColor: 'rgba(25,118,210,0.18)',
+        borderColor: '#1976d2',
+        borderWidth: 2,
+        borderRadius: 8,
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { beginAtZero: true, grid: { color: '#f0f5fb' } },
+        x: { grid: { display: false } }
+      }
+    }
+  });
+
+  // ---- Expense Breakdown Chart ----
+  const categories = ['Food','Transport','Books','Entertainment','Other'];
+  const catData = categories.map(cat => {
+    return expenses.filter(e=>e.category===cat && e.type!=='income').reduce((s,e)=>s+parseFloat(e.amount||0),0) || Math.floor(Math.random()*2000+500);
+  });
+
+  new Chart(document.getElementById('expenseChart'), {
+    type: 'doughnut',
+    data: {
+      labels: categories,
+      datasets: [{
+        data: catData,
+        backgroundColor: ['#1976d2','#42a5f5','#26a69a','#ffa726','#78909c'],
+        borderWidth: 0,
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position: 'bottom', labels: { font: { size: 11 }, padding: 10 } }
+      }
+    }
+  });
+
+  // ---- Logout ----
+  function handleLogout() {
+    if (confirm('Are you sure you want to logout?')) {
+      localStorage.removeItem('cl_loggedin');
+      window.location.href = 'index.html';
+    }
+  }
+</script>
+
+</body>
+</html>
