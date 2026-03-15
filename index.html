@@ -3,23 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CampusLife – Organize Your Campus Journey</title>
+  <title>PersonaTrack – Organize Your Life ! </title>
   <link rel="stylesheet" href="style.css">
-  <!-- Bootstrap for grid/utilities -->
+ 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
   <style>
-    /* =============================================
-       LOGIN / REGISTER PAGE STYLES
-       ============================================= */
-
-    /* Full-page gradient background with animated shapes */
+    
     body {
       min-height: 100vh;
       background: linear-gradient(135deg, #0d47a1 0%, #1565c0 40%, #1976d2 70%, #42a5f5 100%);
       overflow-x: hidden;
     }
 
-    /* Animated floating circles in background */
     .bg-circles {
       position: fixed;
       inset: 0;
@@ -41,7 +36,6 @@
       50%      { transform: translateY(-24px) scale(1.05); }
     }
 
-    /* Top navbar */
     .landing-nav {
       position: relative;
       z-index: 10;
@@ -81,7 +75,6 @@
     }
     .nav-pill.filled:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(0,0,0,0.2); }
 
-    /* Hero section */
     .hero {
       position: relative;
       z-index: 5;
@@ -151,7 +144,6 @@
     }
     .btn-ghost:hover { background: rgba(255,255,255,0.25); }
 
-    /* Feature pills */
     .feature-pills {
       display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px;
     }
@@ -166,7 +158,6 @@
       backdrop-filter: blur(4px);
     }
 
-    /* Auth card (right side) */
     .auth-card {
       background: white;
       border-radius: 24px;
@@ -281,7 +272,6 @@
     }
     .auth-footer a { color: var(--sky-base); font-weight: 700; cursor: pointer; }
 
-    /* Stats strip */
     .stats-strip {
       position: relative;
       z-index: 5;
@@ -308,28 +298,24 @@
 </head>
 <body>
 
-  <!-- Animated Background Circles -->
   <div class="bg-circles">
     <span></span><span></span><span></span><span></span>
   </div>
 
-  <!-- Top Navigation -->
   <nav class="landing-nav">
     <div class="brand">
       <span class="icon">🎓</span>
     PersonaTrack
     </div>
     <div class="nav-links">
-      <!-- These buttons switch the auth card to Login or Register -->
+     
       <button class="nav-pill outline" onclick="switchTab('login')">Login</button>
       <button class="nav-pill filled" onclick="switchTab('register')">Get Started</button>
     </div>
   </nav>
 
-  <!-- Hero + Auth Card -->
   <div class="hero">
 
-    <!-- Left: Hero Text -->
     <div class="hero-text" data-aos="fade-right">
       <div class="tagline">✨ Built for YOU !</div>
       <h1>Balance Your <span>Life</span> Like a Pro</h1>
@@ -341,7 +327,7 @@
         <button class="btn-white" onclick="switchTab('register')">🚀 Start for Free</button>
         <button class="btn-ghost" onclick="switchTab('login')">You already know me !</button>
       </div>
-      <!-- Feature tags -->
+    
       <div class="feature-pills">
         <div class="feature-pill">✅ To-Do Lists</div>
         <div class="feature-pill">💰 Expense Tracker</div>
@@ -352,16 +338,13 @@
       </div>
     </div>
 
-    <!-- Right: Auth Card -->
     <div class="auth-card">
 
-      <!-- Tab Switch: Login / Register -->
       <div class="auth-tabs">
         <button class="auth-tab active" id="tab-login" onclick="switchTab('login')">Login</button>
         <button class="auth-tab" id="tab-register" onclick="switchTab('register')">Register</button>
       </div>
 
-      <!-- LOGIN FORM -->
       <div class="auth-form active" id="form-login">
         <h2>Welcome back! 👋</h2>
         <p class="subtitle">Enter your details to continue</p>
@@ -386,10 +369,9 @@
         </div>
       </div>
 
-      <!-- REGISTER FORM -->
       <div class="auth-form" id="form-register">
         <h2>Create Account 🎓</h2>
-        <p class="subtitle">Join thousands of students today</p>
+        <p class="subtitle">Join thousands of personality today</p>
 
         <div class="input-group-custom">
           <span class="input-icon">👤</span>
@@ -418,7 +400,6 @@
 
   </div><!-- /hero -->
 
-  <!-- Stats Strip -->
   <div class="stats-strip">
     <div class="stat-pill"><div class="num">📚 7</div><div class="lbl">Modules in One App</div></div>
     <div class="stat-pill"><div class="num">⚡ Free</div><div class="lbl">Always Free to Use</div></div>
@@ -426,11 +407,10 @@
     <div class="stat-pill"><div class="num">📊 Smart</div><div class="lbl">Built-in Analytics</div></div>
   </div>
 
-  <!-- Toast container -->
   <div id="toast-container" class="toast-container"></div>
 
   <script>
-    // ---- Switch between Login and Register tabs ----
+
     function switchTab(tab) {
       document.getElementById('form-login').classList.toggle('active', tab === 'login');
       document.getElementById('form-register').classList.toggle('active', tab === 'register');
@@ -438,22 +418,19 @@
       document.getElementById('tab-register').classList.toggle('active', tab === 'register');
     }
 
-    // ---- Handle Login ----
     function handleLogin() {
       const email = document.getElementById('login-email').value.trim();
       const pass  = document.getElementById('login-password').value.trim();
 
-      // Basic validation
       if (!email || !pass) {
         showToast('⚠️ Please fill in all fields!', 'error'); return;
       }
 
-      // Check if user exists in localStorage
       const users = JSON.parse(localStorage.getItem('cl_users') || '[]');
       const user = users.find(u => u.email === email && u.password === pass);
 
       if (!user) {
-        // If no users yet, allow demo login
+      
         if (users.length === 0) {
           const demoUser = { name: 'Demo Student', email: email, university: 'Demo University', password: pass };
           localStorage.setItem('cl_user', JSON.stringify(demoUser));
@@ -465,14 +442,12 @@
         showToast('❌ Invalid email or password!', 'error'); return;
       }
 
-      // Save current user and redirect
       localStorage.setItem('cl_user', JSON.stringify(user));
       localStorage.setItem('cl_loggedin', 'true');
       showToast('✅ Welcome back, ' + user.name + '!', 'success');
       setTimeout(() => window.location.href = 'dashboard.html', 1200);
     }
 
-    // ---- Handle Register ----
     function handleRegister() {
       const name  = document.getElementById('reg-name').value.trim();
       const email = document.getElementById('reg-email').value.trim();
@@ -486,7 +461,6 @@
         showToast('⚠️ Password must be at least 6 characters!', 'error'); return;
       }
 
-      // Save new user
       const users = JSON.parse(localStorage.getItem('cl_users') || '[]');
       if (users.find(u => u.email === email)) {
         showToast('⚠️ Email already registered!', 'error'); return;
@@ -502,7 +476,6 @@
       setTimeout(() => window.location.href = 'dashboard.html', 1400);
     }
 
-    // ---- Toast helper ----
     function showToast(msg, type = 'info') {
       const container = document.getElementById('toast-container');
       const toast = document.createElement('div');
@@ -513,7 +486,6 @@
       setTimeout(() => toast.remove(), 3200);
     }
 
-    // ---- If already logged in, redirect to dashboard ----
     if (localStorage.getItem('cl_loggedin')) {
       window.location.href = 'dashboard.html';
     }
