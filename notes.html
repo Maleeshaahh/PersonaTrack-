@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CampusLife – Notes</title>
+  <title>PersonaTrack – Notes</title>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
   <style>
-    /* Note card */
+   
     .note-card {
       background: white;
       border-radius: 14px;
@@ -22,7 +22,6 @@
     }
     .note-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-hover); }
 
-    /* Different colors per category */
     .note-card[data-cat="Academic"]  { border-top-color: #1976d2; }
     .note-card[data-cat="AIESEC"]    { border-top-color: #e65100; }
     .note-card[data-cat="IEEE"]      { border-top-color: #7b1fa2; }
@@ -36,7 +35,6 @@
     .note-date   { font-size:0.73rem; color:var(--text-light); }
     .note-actions { display:flex; gap:5px; }
 
-    /* Full-view panel */
     .note-view-panel {
       position: fixed;
       right: 0; top: 0; bottom: 0;
@@ -62,12 +60,11 @@
 <body>
 <div class="app-layout">
 
-  <!-- SIDEBAR -->
   <aside class="sidebar">
-    <div class="sidebar-logo"><div class="logo-icon">🎓</div><span>CampusLife</span></div>
+    <div class="sidebar-logo"><div class="logo-icon">🎓</div><span>PersonaTrack</span></div>
     <div class="sidebar-user">
       <div class="avatar" id="sidebar-avatar">S</div>
-      <div class="user-info"><div class="name" id="sidebar-name">Student</div><div class="role">University Student</div></div>
+      <div class="user-info"><div class="name" id="sidebar-name">User</div><div class="role">Member</div></div>
     </div>
     <nav class="sidebar-nav">
       <div class="nav-section-label">Main Menu</div>
@@ -84,7 +81,6 @@
     <div class="sidebar-bottom"><div class="logout-btn" onclick="handleLogout()"><span>🚪</span><span>Logout</span></div></div>
   </aside>
 
-  <!-- MAIN -->
   <div class="main-content">
     <header class="topbar">
       <div class="topbar-title">📝 Notes</div>
@@ -101,7 +97,6 @@
         <button class="btn btn-primary" onclick="openModal()">➕ Add Note</button>
       </div>
 
-      <!-- Category Filter Tabs -->
       <div class="tab-bar" style="margin-bottom:20px;">
         <button class="tab-btn active" onclick="setTab('all',this)">All</button>
         <button class="tab-btn" onclick="setTab('Academic',this)">📚 Academic</button>
@@ -111,15 +106,13 @@
         <button class="tab-btn" onclick="setTab('Other',this)">📌 Other</button>
       </div>
 
-      <!-- Notes Grid -->
       <div class="grid-3" id="notes-grid"></div>
     </main>
 
-    <footer class="footer"><span>CampusLife</span> © 2025 — Made with ❤️ for University Students</footer>
+    <footer class="footer"><span>PersonaTrack</span> © 2026 — Made with ❤️ for YOU ! </footer>
   </div>
 </div>
 
-<!-- Note View Side Panel -->
 <div class="note-view-panel" id="note-panel">
   <div class="note-view-header">
     <span class="badge badge-blue" id="panel-cat">Academic</span>
@@ -134,7 +127,6 @@
   </div>
 </div>
 
-<!-- ADD/EDIT NOTE MODAL -->
 <div class="modal-overlay" id="note-modal">
   <div class="modal-box">
     <div class="modal-header">
