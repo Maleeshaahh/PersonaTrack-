@@ -3,15 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CampusLife – Dashboard</title>
+  <title>PersonaTrack – Dashboard</title>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
   <!-- Chart.js for graphs -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    /* ---- Dashboard-specific styles ---- */
 
-    /* Welcome banner */
     .welcome-banner {
       background: linear-gradient(135deg, var(--sky-dark) 0%, var(--sky-base) 60%, var(--sky-light) 100%);
       border-radius: var(--radius);
@@ -49,7 +47,6 @@
     }
     .welcome-banner .btn-white-sm:hover { transform: translateY(-1px); }
 
-    /* Quick action buttons */
     .quick-actions {
       display: flex;
       gap: 12px;
@@ -79,7 +76,6 @@
     }
     .quick-btn .q-icon { font-size: 1.1rem; }
 
-    /* Today's task items */
     .task-item {
       display: flex;
       align-items: center;
@@ -102,7 +98,6 @@
     .task-text { flex: 1; font-size: 0.88rem; }
     .task-text.done { text-decoration: line-through; color: var(--text-light); }
 
-    /* Expense mini list */
     .expense-item {
       display: flex;
       align-items: center;
@@ -125,7 +120,6 @@
     .expense-amount.minus { color: var(--danger); }
     .expense-amount.plus  { color: var(--success); }
 
-    /* Goal progress item */
     .goal-item { margin-bottom: 16px; }
     .goal-header {
       display: flex; align-items: center; justify-content: space-between;
@@ -134,7 +128,6 @@
     .goal-name { font-size: 0.87rem; font-weight: 600; color: var(--text-dark); }
     .goal-pct  { font-size: 0.82rem; font-weight: 700; color: var(--sky-base); }
 
-    /* Upcoming reminders */
     .reminder-item {
       display: flex;
       align-items: center;
@@ -156,17 +149,16 @@
 
 <div class="app-layout">
 
-  <!-- ============ SIDEBAR ============ -->
   <aside class="sidebar">
     <div class="sidebar-logo">
       <div class="logo-icon">🎓</div>
-      <span>CampusLife</span>
+      <span>PersonaTrack</span>
     </div>
     <div class="sidebar-user">
       <div class="avatar" id="sidebar-avatar">S</div>
       <div class="user-info">
-        <div class="name" id="sidebar-name">Student</div>
-        <div class="role">University Student</div>
+        <div class="name" id="sidebar-name">User</div>
+        <div class="role">Member</div>
       </div>
     </div>
     <nav class="sidebar-nav">
@@ -188,10 +180,8 @@
     </div>
   </aside>
 
-  <!-- ============ MAIN ============ -->
   <div class="main-content">
 
-    <!-- Top Bar -->
     <header class="topbar">
       <div class="topbar-title">📊 Dashboard</div>
       <div class="topbar-search">
@@ -206,17 +196,14 @@
       </div>
     </header>
 
-    <!-- Page Body -->
     <main class="page-body">
 
-      <!-- Welcome Banner -->
       <div class="welcome-banner">
         <h2 id="welcome-msg">Good Morning! 👋</h2>
-        <p>Here's what's happening in your campus life today.</p>
+        <p>Here's what's happening in your life today.</p>
         <button class="btn-white-sm" onclick="window.location.href='todo.html'">📋 View Today's Tasks →</button>
       </div>
 
-      <!-- Quick Actions -->
       <div class="quick-actions">
         <button class="quick-btn" onclick="window.location.href='todo.html'">
           <span class="q-icon">✅</span> Add Task
@@ -235,7 +222,6 @@
         </button>
       </div>
 
-      <!-- Stat Cards Row -->
       <div class="grid-4" style="margin-bottom:24px;">
         <div class="stat-card">
           <div class="stat-icon" style="background:#e3f2fd;">✅</div>
@@ -271,16 +257,13 @@
         </div>
       </div>
 
-      <!-- Main Grid: Charts + Lists -->
       <div class="grid-2" style="margin-bottom:24px;">
 
-        <!-- Weekly Activity Chart -->
         <div class="card">
           <div class="card-title">📈 Weekly Activity</div>
           <canvas id="weeklyChart" height="180"></canvas>
         </div>
 
-        <!-- Expense Breakdown Chart -->
         <div class="card">
           <div class="card-title">💰 Expense Breakdown</div>
           <canvas id="expenseChart" height="180"></canvas>
@@ -288,10 +271,8 @@
 
       </div>
 
-      <!-- Bottom Grid: Tasks + Goals + Reminders + Expenses -->
       <div class="grid-2" style="margin-bottom:24px;">
 
-        <!-- Today's Tasks -->
         <div class="card">
           <div class="card-title" style="justify-content:space-between;">
             <span>✅ Today's Tasks</span>
@@ -305,7 +286,6 @@
           </div>
         </div>
 
-        <!-- Upcoming Reminders -->
         <div class="card">
           <div class="card-title" style="justify-content:space-between;">
             <span>🔔 Upcoming Reminders</span>
@@ -323,7 +303,6 @@
 
       <div class="grid-2">
 
-        <!-- Goal Progress -->
         <div class="card">
           <div class="card-title" style="justify-content:space-between;">
             <span>🎯 Goal Progress</span>
@@ -337,7 +316,6 @@
           </div>
         </div>
 
-        <!-- Recent Expenses -->
         <div class="card">
           <div class="card-title" style="justify-content:space-between;">
             <span>💸 Recent Expenses</span>
@@ -355,42 +333,36 @@
 
     </main>
 
-    <!-- Footer -->
     <footer class="footer">
-      <span>CampusLife</span> © 2025 — Made with ❤️ for University Students
+      <span>PersonaTrack</span> © 2026 — Made with ❤️ for YOU !
     </footer>
   </div><!-- /main-content -->
 
 </div><!-- /app-layout -->
 
 <script>
-  // ---- Auth guard: redirect if not logged in ----
+
   if (!localStorage.getItem('cl_loggedin')) {
     window.location.href = 'index.html';
   }
 
-  // ---- Set user info in sidebar ----
   const user = JSON.parse(localStorage.getItem('cl_user') || '{}');
   document.getElementById('sidebar-name').textContent = user.name || 'Student';
   const initials = (user.name || 'S').split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2);
   document.getElementById('sidebar-avatar').textContent = initials;
 
-  // ---- Welcome message based on time of day ----
   const hour = new Date().getHours();
   const greeting = hour < 12 ? 'Good Morning' : hour < 17 ? 'Good Afternoon' : 'Good Evening';
   document.getElementById('welcome-msg').textContent = greeting + ', ' + (user.name || 'Student') + '! 👋';
 
-  // ---- Today's date in topbar ----
   const now = new Date();
   document.getElementById('today-date').textContent = '📅 ' + now.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric'});
 
-  // ---- Load data from localStorage and update stats ----
   const todos     = JSON.parse(localStorage.getItem('cl_todos')     || '[]');
   const expenses  = JSON.parse(localStorage.getItem('cl_expenses')  || '[]');
   const goals     = JSON.parse(localStorage.getItem('cl_goals')     || '[]');
   const reminders = JSON.parse(localStorage.getItem('cl_reminders') || '[]');
 
-  // Stats
   const todayStr = new Date().toDateString();
   const todayTasks = todos.filter(t => new Date(t.date||'').toDateString() === todayStr || !t.date);
   const doneTasks  = todayTasks.filter(t => t.done).length;
@@ -406,7 +378,6 @@
   const upcoming = reminders.filter(r => !r.done).length;
   document.getElementById('stat-reminders').textContent = upcoming;
 
-  // ---- Render Today's Tasks ----
   if (todayTasks.length > 0) {
     document.getElementById('dashboard-tasks').innerHTML = todayTasks.slice(0,5).map(t => `
       <div class="task-item">
@@ -417,7 +388,6 @@
     `).join('');
   }
 
-  // ---- Render Upcoming Reminders ----
   const upcomingReminders = reminders.filter(r=>!r.done).slice(0,4);
   if (upcomingReminders.length > 0) {
     document.getElementById('dashboard-reminders').innerHTML = upcomingReminders.map(r => `
@@ -432,7 +402,6 @@
     `).join('');
   }
 
-  // ---- Render Goal Progress ----
   const activeGoalList = goals.filter(g=>!g.achieved).slice(0,4);
   if (activeGoalList.length > 0) {
     document.getElementById('dashboard-goals').innerHTML = activeGoalList.map(g => `
@@ -448,7 +417,6 @@
     `).join('');
   }
 
-  // ---- Render Recent Expenses ----
   if (expenses.length > 0) {
     document.getElementById('dashboard-expenses').innerHTML = expenses.slice(-5).reverse().map(e => `
       <div class="expense-item">
@@ -464,9 +432,8 @@
     `).join('');
   }
 
-  // ---- Weekly Chart (tasks completed per day) ----
   const days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-  // Mock data if no real data
+ 
   const weeklyData = days.map((_,i) => {
     return todos.filter(t => t.done && new Date(t.date||'').getDay() === (i+1)%7).length || Math.floor(Math.random()*5);
   });
@@ -494,7 +461,6 @@
     }
   });
 
-  // ---- Expense Breakdown Chart ----
   const categories = ['Food','Transport','Books','Entertainment','Other'];
   const catData = categories.map(cat => {
     return expenses.filter(e=>e.category===cat && e.type!=='income').reduce((s,e)=>s+parseFloat(e.amount||0),0) || Math.floor(Math.random()*2000+500);
@@ -518,7 +484,6 @@
     }
   });
 
-  // ---- Logout ----
   function handleLogout() {
     if (confirm('Are you sure you want to logout?')) {
       localStorage.removeItem('cl_loggedin');
