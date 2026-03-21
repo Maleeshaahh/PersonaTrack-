@@ -1,24 +1,17 @@
 <?php
-// ============================================================
-// contact.php
-// Contact Form - Messages database-ල store කරයි
-// ============================================================
 
 require_once 'includes/db.php';
 require_once 'includes/functions.php';
 
 startSession();
 
-// POST request handle කරයි (AJAX submit)
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    // ---- Form data get කරයි ----
     $name    = post('name');
     $email   = post('email');
     $subject = post('subject');
     $message = post('message');
 
-    // ---- Validation ----
     if (empty($name) || empty($email) || empty($message)) {
         jsonResponse(false, 'Please fill in name, email, and message.');
     }
@@ -27,7 +20,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         jsonResponse(false, 'Please enter a valid email address.');
     }
 
-    // ---- Database save ----
     $db = getDB();
     if (!$db) {
         jsonResponse(false, 'Database connection failed.');
@@ -42,7 +34,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     exit;
 }
 
-// ---- GET request - Contact page render කරයි ----
 $pageTitle = 'Contact Us – PersonaTrack';
 $isLoggedIn = !empty($_SESSION['user_id']);
 ?>
@@ -103,22 +94,18 @@ $isLoggedIn = !empty($_SESSION['user_id']);
   </p>
 
   <form id="contact-form">
-    <!-- Name -->
     <div class="mb-3">
       <label class="form-label fw-bold" style="font-size:0.83rem;">Your Name *</label>
       <input type="text" name="name" id="c-name" class="form-control" placeholder="Full name" required>
     </div>
-    <!-- Email -->
     <div class="mb-3">
       <label class="form-label fw-bold" style="font-size:0.83rem;">Email *</label>
       <input type="email" name="email" id="c-email" class="form-control" placeholder="your@email.com" required>
     </div>
-    <!-- Subject -->
     <div class="mb-3">
       <label class="form-label fw-bold" style="font-size:0.83rem;">Subject</label>
       <input type="text" name="subject" id="c-subject" class="form-control" placeholder="What is this about?">
     </div>
-    <!-- Message -->
     <div class="mb-4">
       <label class="form-label fw-bold" style="font-size:0.83rem;">Message *</label>
       <textarea name="message" id="c-message" class="form-control" rows="5"
@@ -130,7 +117,6 @@ $isLoggedIn = !empty($_SESSION['user_id']);
 </div>
 
 <script>
-  // Contact form AJAX submit
   document.getElementById('contact-form').addEventListener('submit', async function(e) {
     e.preventDefault();
     const btn    = this.querySelector('.submit-btn');
