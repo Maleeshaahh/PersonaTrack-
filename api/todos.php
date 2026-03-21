@@ -1,9 +1,4 @@
 <?php
-// ============================================================
-// api/todos.php
-// To-Do CRUD API - Frontend JavaScript calls කරයි
-// Methods: GET (list), POST (create), PUT (update/toggle), DELETE
-// ============================================================
 
 require_once '../includes/db.php';
 require_once '../includes/functions.php';
@@ -17,7 +12,6 @@ $db     = getDB();
 $userId = currentUserId();
 $method = $_SERVER['REQUEST_METHOD'];
 
-// ---- GET - ඔක්කොම todos list ----
 if ($method === 'GET') {
     $stmt = $db->prepare(
         'SELECT * FROM todos WHERE user_id = ? ORDER BY created_at DESC'
@@ -28,7 +22,6 @@ if ($method === 'GET') {
     exit;
 }
 
-// ---- POST - නව todo create ----
 if ($method === 'POST') {
     $input = json_decode(file_get_contents('php://input'), true);
 
@@ -53,14 +46,12 @@ if ($method === 'POST') {
     exit;
 }
 
-// ---- PUT - todo update (toggle done / update fields) ----
 if ($method === 'PUT') {
     $input = json_decode(file_get_contents('php://input'), true);
     $id    = (int)($input['id'] ?? 0);
 
     if (!$id) jsonResponse(false, 'Invalid task ID.');
 
-    // Toggle done status
     if (isset($input['is_done'])) {
         $stmt = $db->prepare(
             'UPDATE todos SET is_done = ? WHERE id = ? AND user_id = ?'
@@ -73,7 +64,6 @@ if ($method === 'PUT') {
     jsonResponse(false, 'Nothing to update.');
 }
 
-// ---- DELETE - todo delete ----
 if ($method === 'DELETE') {
     $input = json_decode(file_get_contents('php://input'), true);
     $id    = (int)($input['id'] ?? 0);
