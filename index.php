@@ -1,13 +1,8 @@
 <?php
-// ============================================================
-// index.php
-// Landing page + Login / Register (PHP backend connect)
-// ============================================================
 
 require_once 'includes/functions.php';
 startSession();
 
-// Already logged in නම් dashboard redirect
 if (!empty($_SESSION['user_id'])) {
     redirect('dashboard.php');
 }
@@ -112,10 +107,8 @@ if (!empty($_SESSION['user_id'])) {
       <button class="auth-tab" id="tab-register" onclick="switchTab('register')">Register</button>
     </div>
 
-    <!-- Error message area -->
     <div id="auth-error"></div>
 
-    <!-- Login Form -->
     <div class="auth-form active" id="form-login">
       <h2>Welcome back! 👋</h2>
       <p class="subtitle">Enter your details to continue</p>
@@ -131,7 +124,6 @@ if (!empty($_SESSION['user_id'])) {
       <div class="auth-footer">Don't have an account? <a onclick="switchTab('register')">Register here</a></div>
     </div>
 
-    <!-- Register Form -->
     <div class="auth-form" id="form-register">
       <h2>Create Account 🎓</h2>
       <p class="subtitle">Join thousands of students today</p>
@@ -184,7 +176,6 @@ if (!empty($_SESSION['user_id'])) {
     document.getElementById('auth-error').style.display = 'none';
   }
 
-  // ---- Login - PHP backend call ----
   async function handleLogin() {
     hideError();
     const email    = document.getElementById('login-email').value.trim();
@@ -214,7 +205,6 @@ if (!empty($_SESSION['user_id'])) {
     }
   }
 
-  // ---- Register - PHP backend call ----
   async function handleRegister() {
     hideError();
     const name       = document.getElementById('reg-name').value.trim();
@@ -258,7 +248,6 @@ if (!empty($_SESSION['user_id'])) {
     setTimeout(() => t.remove(), 3000);
   }
 
-  // Enter key support
   document.addEventListener('keydown', (e) => {
     if (e.key !== 'Enter') return;
     if (document.getElementById('form-login').classList.contains('active')) handleLogin();
