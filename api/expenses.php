@@ -1,8 +1,4 @@
 <?php
-// ============================================================
-// api/expenses.php
-// Expenses CRUD API
-// ============================================================
 
 require_once '../includes/db.php';
 require_once '../includes/functions.php';
@@ -16,7 +12,6 @@ $db     = getDB();
 $userId = currentUserId();
 $method = $_SERVER['REQUEST_METHOD'];
 
-// ---- GET - ඔක්කොම expenses list ----
 if ($method === 'GET') {
     $stmt = $db->prepare(
         'SELECT * FROM expenses WHERE user_id = ? ORDER BY exp_date DESC, created_at DESC'
@@ -26,7 +21,6 @@ if ($method === 'GET') {
     exit;
 }
 
-// ---- POST - නව expense/income create ----
 if ($method === 'POST') {
     $input = json_decode(file_get_contents('php://input'), true);
 
@@ -51,7 +45,6 @@ if ($method === 'POST') {
     exit;
 }
 
-// ---- DELETE - expense delete ----
 if ($method === 'DELETE') {
     $input = json_decode(file_get_contents('php://input'), true);
     $id    = (int)($input['id'] ?? 0);
