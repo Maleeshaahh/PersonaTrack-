@@ -1,7 +1,5 @@
 <?php
-// ============================================================
-// goals.php  –  Goals Tracker page (session protected)
-// ============================================================
+
 require_once 'includes/functions.php';
 startSession();
 requireLogin();
@@ -84,13 +82,11 @@ $userName = htmlspecialchars($_SESSION['user_name'] ?? 'Student');
         <div class="stat-card"><div class="stat-icon" style="background:#e8f5e9;">🏅</div><div class="stat-info"><div class="label">Club Goals</div><div class="value" id="st-club">–</div></div></div>
       </div>
 
-      <!-- Charts -->
       <div class="grid-2" style="margin-bottom:22px;">
         <div class="card"><div class="card-title">📊 Goals by Category</div><canvas id="goalChart" height="180"></canvas></div>
         <div class="card"><div class="card-title">📈 Overall Progress</div><canvas id="progressChart" height="180"></canvas></div>
       </div>
 
-      <!-- Tab filter -->
       <div class="tab-bar" style="margin-bottom:18px;">
         <button class="tab-btn active" onclick="setTab('all',this)">All Goals</button>
         <button class="tab-btn" onclick="setTab('Academic',this)">📚 Academic</button>
@@ -105,7 +101,6 @@ $userName = htmlspecialchars($_SESSION['user_name'] ?? 'Student');
   </div>
 </div>
 
-<!-- Add Goal Modal -->
 <div class="modal-overlay" id="goal-modal">
   <div class="modal-box">
     <div class="modal-header">
@@ -196,7 +191,6 @@ $userName = htmlspecialchars($_SESSION['user_name'] ?? 'Student');
     updateCharts();
   }
 
-  // ---- Update progress via API ----
   async function updateProgress(id, val) {
     await fetch('api/goals.php', {
       method: 'PUT',
