@@ -1,14 +1,9 @@
 <?php
-// ============================================================
-// dashboard.php
-// Dashboard - Session check + HTML serve කරයි
-// ============================================================
 
 require_once 'includes/functions.php';
 startSession();
-requireLogin(); // Login නැත්නම් index.php redirect
+requireLogin(); 
 
-// Session user info
 $userName  = htmlspecialchars($_SESSION['user_name']  ?? 'Student');
 $userEmail = htmlspecialchars($_SESSION['user_email'] ?? '');
 $userId    = (int)$_SESSION['user_id'];
@@ -65,7 +60,6 @@ $userId    = (int)$_SESSION['user_id'];
 
     <main class="page-body">
 
-      <!-- Welcome banner -->
       <div class="welcome-banner" style="background:linear-gradient(135deg,#0d47a1 0%,#1976d2 60%,#42a5f5 100%);border-radius:14px;padding:28px 32px;color:white;margin-bottom:24px;position:relative;overflow:hidden;">
         <div style="position:absolute;right:28px;top:50%;transform:translateY(-50%);font-size:5rem;opacity:.18;">🎓</div>
         <h2 style="font-family:'Poppins',sans-serif;font-size:1.5rem;font-weight:800;margin-bottom:5px;" id="welcome-msg">Welcome! 👋</h2>
@@ -73,7 +67,6 @@ $userId    = (int)$_SESSION['user_id'];
         <a href="todo.php" style="margin-top:14px;display:inline-block;background:white;color:#0d47a1;border-radius:20px;padding:7px 18px;font-weight:700;font-size:.85rem;text-decoration:none;">📋 View Today's Tasks →</a>
       </div>
 
-      <!-- Quick actions -->
       <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:24px;">
         <a href="todo.php"      class="quick-btn" style="display:flex;align-items:center;gap:9px;padding:10px 18px;border-radius:12px;border:1.8px solid #bbdefb;background:white;color:#0d47a1;font-size:.85rem;font-weight:700;cursor:pointer;transition:.22s;box-shadow:0 4px 20px rgba(13,71,161,.1);text-decoration:none;">✅ Add Task</a>
         <a href="expenses.php"  class="quick-btn" style="display:flex;align-items:center;gap:9px;padding:10px 18px;border-radius:12px;border:1.8px solid #bbdefb;background:white;color:#0d47a1;font-size:.85rem;font-weight:700;cursor:pointer;transition:.22s;box-shadow:0 4px 20px rgba(13,71,161,.1);text-decoration:none;">💸 Add Expense</a>
@@ -82,7 +75,6 @@ $userId    = (int)$_SESSION['user_id'];
         <a href="reminders.php" class="quick-btn" style="display:flex;align-items:center;gap:9px;padding:10px 18px;border-radius:12px;border:1.8px solid #bbdefb;background:white;color:#0d47a1;font-size:.85rem;font-weight:700;cursor:pointer;transition:.22s;box-shadow:0 4px 20px rgba(13,71,161,.1);text-decoration:none;">🔔 Add Reminder</a>
       </div>
 
-      <!-- Stats -->
       <div class="grid-4" style="margin-bottom:24px;">
         <div class="stat-card">
           <div class="stat-icon" style="background:#e3f2fd;">✅</div>
@@ -102,13 +94,11 @@ $userId    = (int)$_SESSION['user_id'];
         </div>
       </div>
 
-      <!-- Charts -->
       <div class="grid-2" style="margin-bottom:24px;">
         <div class="card"><div class="card-title">📈 Weekly Activity</div><canvas id="weeklyChart" height="180"></canvas></div>
         <div class="card"><div class="card-title">💰 Expense Breakdown</div><canvas id="expenseChart" height="180"></canvas></div>
       </div>
 
-      <!-- Recent items -->
       <div class="grid-2">
         <div class="card">
           <div class="card-title" style="justify-content:space-between;">
@@ -132,13 +122,11 @@ $userId    = (int)$_SESSION['user_id'];
 </div>
 
 <script>
-  // ---- Welcome greeting ----
   const hour = new Date().getHours();
   const greeting = hour < 12 ? 'Good Morning' : hour < 17 ? 'Good Afternoon' : 'Good Evening';
   document.getElementById('welcome-msg').textContent = greeting + ', <?= $userName ?>! 👋';
   document.getElementById('today-date').textContent  = '📅 ' + new Date().toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric'});
 
-  // ---- Load dashboard data from PHP APIs ----
   async function loadDashboard() {
     const [todosRes, expRes, goalsRes, remRes] = await Promise.all([
       fetch('api/todos.php'),
@@ -152,7 +140,6 @@ $userId    = (int)$_SESSION['user_id'];
     const goals     = (await goalsRes.json()).data  || [];
     const reminders = (await remRes.json()).data    || [];
 
-    // Stats
     const todayStr    = new Date().toDateString();
     const todayTasks  = todos.filter(t => t.due_date && new Date(t.due_date).toDateString() === todayStr || !t.due_date);
     const doneTasks   = todayTasks.filter(t => t.is_done == 1).length;
@@ -164,7 +151,6 @@ $userId    = (int)$_SESSION['user_id'];
     document.getElementById('stat-goals').textContent     = goals.filter(g => !g.is_achieved).length;
     document.getElementById('stat-reminders').textContent = reminders.filter(r => !r.is_done).length;
 
-    // Today's tasks list
     const taskHtml = todayTasks.slice(0, 5).map(t => `
       <div style="display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid #f0f5fb;">
         <div style="width:20px;height:20px;border-radius:50%;border:2px solid #42a5f5;background:${t.is_done ? '#42a5f5' : 'transparent'};display:flex;align-items:center;justify-content:center;flex-shrink:0;">
@@ -175,7 +161,6 @@ $userId    = (int)$_SESSION['user_id'];
       </div>`).join('') || '<div class="empty-state"><div class="empty-icon">📋</div><p>No tasks yet. <a href="todo.php" style="color:#1976d2">Add one!</a></p></div>';
     document.getElementById('dashboard-tasks').innerHTML = taskHtml;
 
-    // Recent expenses list
     const expHtml = expenses.slice(-5).reverse().map(e => `
       <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #f0f5fb;">
         <div style="width:36px;height:36px;border-radius:10px;background:#e3f2fd;display:flex;align-items:center;justify-content:center;font-size:1.1rem;">${e.type === 'income' ? '💵' : '💸'}</div>
@@ -184,7 +169,6 @@ $userId    = (int)$_SESSION['user_id'];
       </div>`).join('') || '<div class="empty-state"><div class="empty-icon">💰</div><p>No expenses yet.</p></div>';
     document.getElementById('dashboard-expenses').innerHTML = expHtml;
 
-    // Charts
     renderCharts(todos, expenses);
   }
 
