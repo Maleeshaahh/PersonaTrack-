@@ -1,8 +1,4 @@
 <?php
-// ============================================================
-// api/notes.php
-// Notes CRUD API
-// ============================================================
 
 require_once '../includes/db.php';
 require_once '../includes/functions.php';
