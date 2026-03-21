@@ -1,8 +1,4 @@
 <?php
-// ============================================================
-// api/profile.php
-// Profile GET & UPDATE API
-// ============================================================
 
 require_once '../includes/db.php';
 require_once '../includes/functions.php';
@@ -17,7 +13,6 @@ $userId = currentUserId();
 $method = $_SERVER['REQUEST_METHOD'];
 
 if ($method === 'GET') {
-    // User + profile join කරයි
     $stmt = $db->prepare(
         'SELECT u.username, u.email, u.university,
                 p.faculty, p.academic_yr, p.phone, p.dob
@@ -40,13 +35,11 @@ if ($method === 'PUT') {
     $phone      = clean($input['phone']       ?? '');
     $dob        = $input['dob']                ?: null;
 
-    // Users table update (name, university)
     if ($name) {
         $stmt = $db->prepare('UPDATE users SET username = ?, university = ? WHERE id = ?');
         $stmt->execute([$name, $university, $userId]);
     }
 
-    // Profiles table upsert (insert or update)
     $stmt = $db->prepare(
         'INSERT INTO profiles (user_id, faculty, academic_yr, phone, dob)
          VALUES (?, ?, ?, ?, ?)
@@ -58,7 +51,6 @@ if ($method === 'PUT') {
     );
     $stmt->execute([$userId, $faculty, $year, $phone, $dob]);
 
-    // Session username update
     if ($name) $_SESSION['user_name'] = $name;
 
     echo json_encode(['success' => true, 'message' => 'Profile updated!']);
