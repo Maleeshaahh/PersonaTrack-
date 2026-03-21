@@ -1,7 +1,5 @@
 <?php
-// ============================================================
-// expenses.php  –  Expense Tracker page (session protected)
-// ============================================================
+
 require_once 'includes/functions.php';
 startSession();
 requireLogin();
@@ -87,7 +85,6 @@ $userName = htmlspecialchars($_SESSION['user_name'] ?? 'Student');
         </div>
       </div>
 
-      <!-- Balance card + pie chart -->
       <div class="grid-2" style="margin-bottom:24px;">
         <div class="balance-card">
           <div class="label">💰 Total Balance</div>
@@ -101,13 +98,11 @@ $userName = htmlspecialchars($_SESSION['user_name'] ?? 'Student');
         <div class="card"><div class="card-title">📊 Category Breakdown</div><canvas id="expPieChart" height="160"></canvas></div>
       </div>
 
-      <!-- Week chart + budget bars -->
       <div class="grid-2" style="margin-bottom:24px;">
         <div class="card"><div class="card-title">📈 Spending This Week</div><canvas id="weekSpendChart" height="170"></canvas></div>
         <div class="card"><div class="card-title">🎯 Category Budgets</div><div id="budget-bars"></div></div>
       </div>
 
-      <!-- Transaction list -->
       <div class="card">
         <div class="card-title" style="justify-content:space-between;margin-bottom:14px;">
           <span>📋 Transaction History</span>
@@ -127,7 +122,6 @@ $userName = htmlspecialchars($_SESSION['user_name'] ?? 'Student');
   </div>
 </div>
 
-<!-- Add Expense/Income Modal -->
 <div class="modal-overlay" id="exp-modal">
   <div class="modal-box">
     <div class="modal-header">
@@ -175,7 +169,6 @@ $userName = htmlspecialchars($_SESSION['user_name'] ?? 'Student');
   let expenses = [];
   const catIcons = { Food:'🍜', Transport:'🚌', Books:'📚', Entertainment:'🎮', Health:'💊', Clothing:'👕', Other:'📦' };
 
-  // ---- Load expenses from API ----
   async function loadExpenses() {
     const res  = await fetch('api/expenses.php');
     const data = await res.json();
@@ -187,7 +180,6 @@ $userName = htmlspecialchars($_SESSION['user_name'] ?? 'Student');
     const search = document.getElementById('search-input').value.toLowerCase();
     const cat    = document.getElementById('cat-filter').value;
 
-    // ---- Calculate totals ----
     const income  = expenses.filter(e => e.type==='income').reduce((s,e) => s+parseFloat(e.amount),0);
     const spent   = expenses.filter(e => e.type!=='income').reduce((s,e) => s+parseFloat(e.amount),0);
     document.getElementById('total-income').textContent    = 'Rs ' + income.toLocaleString();
@@ -195,7 +187,6 @@ $userName = htmlspecialchars($_SESSION['user_name'] ?? 'Student');
     document.getElementById('total-remaining').textContent = 'Rs ' + income.toLocaleString();
     document.getElementById('total-balance').textContent   = 'Rs ' + (income - spent).toLocaleString();
 
-    // ---- Filter & render list ----
     const filtered = expenses.filter(e =>
       e.title.toLowerCase().includes(search) && (!cat || e.category===cat)
     ).reverse();
@@ -213,7 +204,6 @@ $userName = htmlspecialchars($_SESSION['user_name'] ?? 'Student');
             <button class="btn-icon" onclick="deleteTxn(${e.id})" style="margin-left:6px;">🗑️</button>
           </div>`).join('');
 
-    // ---- Budget bars ----
     const cats    = ['Food','Transport','Books','Entertainment','Health'];
     const budgets = { Food:5000, Transport:2000, Books:3000, Entertainment:1500, Health:1000 };
     document.getElementById('budget-bars').innerHTML = cats.map(c => {
@@ -254,7 +244,6 @@ $userName = htmlspecialchars($_SESSION['user_name'] ?? 'Student');
     });
   }
 
-  // ---- Save expense/income via API ----
   async function saveExpense() {
     const title  = document.getElementById('exp-title').value.trim();
     const amount = parseFloat(document.getElementById('exp-amount').value);
@@ -284,7 +273,6 @@ $userName = htmlspecialchars($_SESSION['user_name'] ?? 'Student');
 
   async function clearAll() {
     if (!confirm('Clear all transactions? Cannot be undone.')) return;
-    // Delete one by one
     for (const e of expenses) {
       await fetch('api/expenses.php',{ method:'DELETE', headers:{'Content-Type':'application/json'}, body:JSON.stringify({id:e.id}) });
     }
