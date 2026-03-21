@@ -1,7 +1,5 @@
 <?php
-// ============================================================
-// notes.php  –  Notes page (session protected)
-// ============================================================
+
 require_once 'includes/functions.php';
 startSession();
 requireLogin();
@@ -33,7 +31,7 @@ $userName = htmlspecialchars($_SESSION['user_name'] ?? 'Student');
     .note-body  { font-size:.84rem; color:#37474f; line-height:1.6; flex:1; overflow:hidden; display:-webkit-box; -webkit-line-clamp:4; -webkit-box-orient:vertical; }
     .note-footer{ display:flex; align-items:center; justify-content:space-between; margin-top:12px; }
     .note-date  { font-size:.73rem; color:#78909c; }
-    /* Side panel for reading a note */
+    
     .note-panel {
       position:fixed; right:0; top:0; bottom:0; width:400px;
       background:white; box-shadow:-6px 0 30px rgba(13,71,161,.12);
@@ -103,7 +101,6 @@ $userName = htmlspecialchars($_SESSION['user_name'] ?? 'Student');
   </div>
 </div>
 
-<!-- Note view side panel -->
 <div class="note-panel" id="note-panel">
   <div class="note-panel-header">
     <span id="panel-cat" style="background:#e3f2fd;color:#1976d2;padding:3px 11px;border-radius:20px;font-size:.75rem;font-weight:700;">Academic</span>
@@ -118,7 +115,6 @@ $userName = htmlspecialchars($_SESSION['user_name'] ?? 'Student');
   </div>
 </div>
 
-<!-- Add / Edit Note Modal -->
 <div class="modal-overlay" id="note-modal">
   <div class="modal-box">
     <div class="modal-header">
