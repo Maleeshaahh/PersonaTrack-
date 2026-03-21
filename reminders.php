@@ -1,7 +1,5 @@
 <?php
-// ============================================================
-// reminders.php  –  Reminders page (session protected)
-// ============================================================
+
 require_once 'includes/functions.php';
 startSession();
 requireLogin();
@@ -31,7 +29,7 @@ $userName = htmlspecialchars($_SESSION['user_name'] ?? 'Student');
     .rem-title { font-family:'Poppins',sans-serif; font-size:.97rem; font-weight:700; color:#0d47a1; }
     .rem-title.done { text-decoration:line-through; color:#78909c; }
     .rem-meta  { font-size:.78rem; color:#78909c; margin-top:4px; display:flex; gap:12px; flex-wrap:wrap; }
-    /* Mini calendar */
+   
     .mini-cal { background:white; border-radius:14px; padding:18px; box-shadow:0 4px 20px rgba(13,71,161,.1); }
     .cal-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
     .cal-month  { font-family:'Poppins',sans-serif; font-weight:700; color:#0d47a1; }
@@ -86,14 +84,13 @@ $userName = htmlspecialchars($_SESSION['user_name'] ?? 'Student');
         <button class="btn btn-primary" onclick="openModal()">➕ Add Reminder</button>
       </div>
 
-      <!-- Today's events -->
       <div class="today-section">
         <h3 style="font-family:'Poppins',sans-serif;font-weight:700;font-size:1rem;color:#e65100;margin-bottom:12px;">⚡ Today – Important Events</h3>
         <div id="today-list"><p style="font-size:.87rem;color:#78909c;">No events today. Enjoy your free time! 🎉</p></div>
       </div>
 
       <div class="grid-2">
-        <!-- Reminders list -->
+   
         <div>
           <div class="tab-bar" style="margin-bottom:16px;">
             <button class="tab-btn active" onclick="setTab('all',this)">All</button>
@@ -105,7 +102,6 @@ $userName = htmlspecialchars($_SESSION['user_name'] ?? 'Student');
           <div id="reminders-list"></div>
         </div>
 
-        <!-- Mini calendar -->
         <div class="mini-cal">
           <div class="cal-header">
             <button onclick="changeMonth(-1)" style="background:none;border:none;cursor:pointer;font-size:1rem;color:#1976d2;">‹</button>
@@ -124,7 +120,6 @@ $userName = htmlspecialchars($_SESSION['user_name'] ?? 'Student');
   </div>
 </div>
 
-<!-- Add Reminder Modal -->
 <div class="modal-overlay" id="rem-modal">
   <div class="modal-box">
     <div class="modal-header"><h3>🔔 Add Reminder</h3><button class="btn-icon" onclick="closeModal()">✕</button></div>
@@ -174,7 +169,6 @@ $userName = htmlspecialchars($_SESSION['user_name'] ?? 'Student');
     const todayStr = new Date().toDateString();
     const now      = new Date(); now.setHours(0,0,0,0);
 
-    // Today's events
     const todayRems = reminders.filter(r => r.rem_date && new Date(r.rem_date).toDateString()===todayStr && !r.is_done);
     document.getElementById('today-list').innerHTML = todayRems.length > 0
       ? todayRems.map(r => `
@@ -188,7 +182,6 @@ $userName = htmlspecialchars($_SESSION['user_name'] ?? 'Student');
           </div>`).join('')
       : '<p style="font-size:.87rem;color:#78909c;">No events today. Enjoy your free time! 🎉</p>';
 
-    // Filter list
     let filtered = reminders.filter(r => r.title.toLowerCase().includes(search));
     if (currentTab === 'upcoming') filtered = filtered.filter(r => !r.is_done && r.rem_date && new Date(r.rem_date) >= now);
     else if (currentTab !== 'all') filtered = filtered.filter(r => r.rem_type===currentTab);
@@ -219,7 +212,6 @@ $userName = htmlspecialchars($_SESSION['user_name'] ?? 'Student');
             </div>`;
         }).join('');
 
-    // Upcoming this week
     const weekEnd  = new Date(); weekEnd.setDate(weekEnd.getDate()+7);
     const weekRems = reminders.filter(r => r.rem_date && new Date(r.rem_date)>=now && new Date(r.rem_date)<=weekEnd && !r.is_done)
                               .sort((a,b) => new Date(a.rem_date)-new Date(b.rem_date));
