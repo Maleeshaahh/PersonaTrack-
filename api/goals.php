@@ -1,8 +1,4 @@
 <?php
-// ============================================================
-// api/goals.php
-// Goals CRUD API
-// ============================================================
 
 require_once '../includes/db.php';
 require_once '../includes/functions.php';
@@ -51,7 +47,6 @@ if ($method === 'PUT') {
 
     if (!$id) jsonResponse(false, 'Invalid ID.');
 
-    // Progress update + achieved check
     $isAchieved = ($progress >= 100) ? 1 : 0;
     $stmt = $db->prepare(
         'UPDATE goals SET progress = ?, is_achieved = ? WHERE id = ? AND user_id = ?'
