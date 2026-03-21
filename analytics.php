@@ -1,7 +1,5 @@
 <?php
-// ============================================================
-// analytics.php  –  Analytics & Insights page (session protected)
-// ============================================================
+
 require_once 'includes/functions.php';
 startSession();
 requireLogin();
@@ -70,7 +68,6 @@ $userName = htmlspecialchars($_SESSION['user_name'] ?? 'Student');
         <div><h1>Analytics & Insights 📊</h1><p>See how you're doing across all areas of your life</p></div>
       </div>
 
-      <!-- Insight cards -->
       <div class="grid-4" style="margin-bottom:26px;" id="insight-cards">
         <div class="insight-card"><div class="insight-icon">⏳</div><div class="insight-value">–</div><div class="insight-label">Loading...</div></div>
         <div class="insight-card"><div class="insight-icon">⏳</div><div class="insight-value">–</div><div class="insight-label">Loading...</div></div>
@@ -78,19 +75,16 @@ $userName = htmlspecialchars($_SESSION['user_name'] ?? 'Student');
         <div class="insight-card"><div class="insight-icon">⏳</div><div class="insight-value">–</div><div class="insight-label">Loading...</div></div>
       </div>
 
-      <!-- Charts row 1 -->
       <div class="grid-2" style="margin-bottom:22px;">
         <div class="card"><div class="card-title">✅ Task Completion This Week</div><canvas id="taskWeekChart" height="190"></canvas></div>
         <div class="card"><div class="card-title">💰 Daily Expenses</div><canvas id="dailyExpChart" height="190"></canvas></div>
       </div>
 
-      <!-- Charts row 2 -->
       <div class="grid-2" style="margin-bottom:22px;">
         <div class="card"><div class="card-title">📚 Activity by Category</div><canvas id="actCatChart" height="190"></canvas></div>
         <div class="card"><div class="card-title">📅 Monthly Task Completion</div><canvas id="monthlyChart" height="190"></canvas></div>
       </div>
 
-      <!-- Goal radar + tips -->
       <div class="grid-2">
         <div class="card"><div class="card-title">🎯 Goal Completion Rate</div><canvas id="goalRadarChart" height="220"></canvas></div>
         <div class="card"><div class="card-title">💡 Smart Insights & Tips</div><div id="tips-list"></div></div>
@@ -105,7 +99,6 @@ $userName = htmlspecialchars($_SESSION['user_name'] ?? 'Student');
 <script>
   document.getElementById('today-date').textContent = '📅 ' + new Date().toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
 
-  // ---- Load all data from APIs ----
   async function loadAnalytics() {
     const [tRes, eRes, gRes, rRes, nRes] = await Promise.all([
       fetch('api/todos.php'),
@@ -150,7 +143,6 @@ $userName = htmlspecialchars($_SESSION['user_name'] ?? 'Student');
   function buildCharts(todos, expenses, goals, notes) {
     const days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 
-    // Task completion per day
     new Chart(document.getElementById('taskWeekChart'),{
       type:'bar',
       data:{ labels:days, datasets:[
@@ -160,14 +152,12 @@ $userName = htmlspecialchars($_SESSION['user_name'] ?? 'Student');
       options:{ responsive:true, plugins:{legend:{position:'top'}}, scales:{y:{beginAtZero:true,grid:{color:'#f0f5fb'}},x:{grid:{display:false}}} }
     });
 
-    // Daily expenses
     new Chart(document.getElementById('dailyExpChart'),{
       type:'line',
       data:{ labels:days, datasets:[{ label:'Spent (Rs)', data:days.map((_,i)=>expenses.filter(e=>e.type!=='income'&&e.exp_date&&new Date(e.exp_date).getDay()===(i+1)%7).reduce((s,e)=>s+parseFloat(e.amount),0)), borderColor:'#1976d2', backgroundColor:'rgba(25,118,210,.08)', fill:true, tension:.4, borderWidth:2.5, pointRadius:5, pointBackgroundColor:'#1976d2' }]},
       options:{ responsive:true, plugins:{legend:{display:false}}, scales:{y:{beginAtZero:true,grid:{color:'#f0f5fb'}},x:{grid:{display:false}}} }
     });
 
-    // Activity by category
     const cats       = ['Academic','Club','Personal','Other'];
     const catTaskData= cats.map(c=>todos.filter(t=>t.category===c).length);
     const catNoteData= cats.map(c=>notes.filter(n=>n.category===c).length);
@@ -180,7 +170,6 @@ $userName = htmlspecialchars($_SESSION['user_name'] ?? 'Student');
       options:{ responsive:true, plugins:{legend:{position:'top'}}, scales:{y:{beginAtZero:true,grid:{color:'#f0f5fb'}},x:{grid:{display:false}}} }
     });
 
-    // Monthly task completion (last 6 months)
     const months     = [];
     const monthData  = [];
     for (let i=5;i>=0;i--) {
@@ -194,7 +183,6 @@ $userName = htmlspecialchars($_SESSION['user_name'] ?? 'Student');
       options:{ responsive:true, plugins:{legend:{display:false}}, scales:{y:{beginAtZero:true,grid:{color:'#f0f5fb'}},x:{grid:{display:false}}} }
     });
 
-    // Goal radar
     const avgProgress = cats.map(c => {
       const gs = goals.filter(g=>g.category===c);
       return gs.length > 0 ? Math.round(gs.reduce((s,g)=>s+(parseInt(g.progress)||0),0)/gs.length) : 0;
