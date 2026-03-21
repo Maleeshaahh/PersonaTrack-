@@ -1,8 +1,4 @@
 <?php
-// ============================================================
-// api/reminders.php
-// Reminders CRUD API
-// ============================================================
 
 require_once '../includes/db.php';
 require_once '../includes/functions.php';
