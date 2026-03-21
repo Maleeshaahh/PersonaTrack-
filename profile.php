@@ -1,7 +1,5 @@
 <?php
-// ============================================================
-// profile.php  –  My Profile page (session protected)
-// ============================================================
+
 require_once 'includes/functions.php';
 startSession();
 requireLogin();
@@ -84,7 +82,6 @@ $initials  = strtoupper(substr($userName,0,2));
         <button class="btn btn-primary" onclick="openModal()">✏️ Edit Profile</button>
       </div>
 
-      <!-- Hero -->
       <div class="profile-hero">
         <div class="avatar-lg" id="hero-initials"><?= $initials ?></div>
         <div>
@@ -97,7 +94,6 @@ $initials  = strtoupper(substr($userName,0,2));
         </div>
       </div>
 
-      <!-- Stats strip -->
       <div class="profile-stats">
         <div class="ps-item"><div class="ps-val" id="ps-tasks">–</div><div class="ps-lbl">Tasks</div></div>
         <div class="ps-item"><div class="ps-val" id="ps-goals">–</div><div class="ps-lbl">Goals</div></div>
@@ -106,9 +102,8 @@ $initials  = strtoupper(substr($userName,0,2));
         <div class="ps-item"><div class="ps-val" id="ps-done">–</div><div class="ps-lbl">Completion</div></div>
       </div>
 
-      <!-- Info + Settings -->
       <div class="grid-2">
-        <!-- Personal info -->
+    
         <div class="info-section">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
             <h3 style="font-family:'Poppins',sans-serif;font-weight:700;font-size:1rem;color:#0d47a1;">👤 Personal Information</h3>
@@ -122,7 +117,6 @@ $initials  = strtoupper(substr($userName,0,2));
           <div class="info-row"><span style="font-size:1.1rem;">📱</span><div><div class="ir-label">Phone</div><div class="ir-value" id="pi-phone">–</div></div></div>
         </div>
 
-        <!-- Settings -->
         <div class="info-section">
           <h3 style="font-family:'Poppins',sans-serif;font-weight:700;font-size:1rem;color:#0d47a1;margin-bottom:18px;">⚙️ App Settings</h3>
           <div class="info-row">
@@ -150,7 +144,6 @@ $initials  = strtoupper(substr($userName,0,2));
   </div>
 </div>
 
-<!-- Edit Profile Modal -->
 <div class="modal-overlay" id="profile-modal">
   <div class="modal-box" style="max-width:520px;">
     <div class="modal-header"><h3>✏️ Edit Profile</h3><button class="btn-icon" onclick="closeModal()">✕</button></div>
@@ -178,7 +171,6 @@ $initials  = strtoupper(substr($userName,0,2));
 <script>
   document.getElementById('today-date').textContent = '📅 ' + new Date().toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
 
-  // ---- Load profile + stats ----
   async function loadProfile() {
     const pRes = await fetch('api/profile.php');
     const p    = (await pRes.json()).data || {};
@@ -191,7 +183,6 @@ $initials  = strtoupper(substr($userName,0,2));
     document.getElementById('hero-uni').textContent   = (p.university||'University') + (p.faculty ? ' · '+p.faculty : '');
     document.getElementById('hero-year').textContent  = p.academic_yr || 'Year 1';
 
-    // Stats from other APIs
     const [tRes, gRes, nRes, eRes] = await Promise.all([
       fetch('api/todos.php'), fetch('api/goals.php'),
       fetch('api/notes.php'), fetch('api/expenses.php'),
@@ -209,7 +200,6 @@ $initials  = strtoupper(substr($userName,0,2));
     document.getElementById('ps-done').textContent = rate + '%';
   }
 
-  // ---- Save profile via API ----
   async function saveProfile() {
     const res = await fetch('api/profile.php', {
       method: 'PUT',
@@ -239,7 +229,7 @@ $initials  = strtoupper(substr($userName,0,2));
   }
 
   function openModal() {
-    // Pre-fill current values
+   
     document.getElementById('e-name').value    = document.getElementById('hero-name').textContent;
     document.getElementById('e-uni').value     = document.getElementById('pi-uni').textContent  !== '–' ? document.getElementById('pi-uni').textContent   : '';
     document.getElementById('e-faculty').value = document.getElementById('pi-faculty').textContent !== '–' ? document.getElementById('pi-faculty').textContent : '';
